@@ -1,0 +1,129 @@
+.mt-8 {
+    margin-top: 6rem!important;
+}
+
+/**
+Pagination custom
+*/
+.pagination {
+    display: inline-block;
+    padding-left: 0;
+    margin: 20px 0;
+    border-radius: 4px;
+    color:
+}
+.pagination > li {
+  display: inline;
+}
+.pagination > li > a {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #198754;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+.page-item > a {
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+}
+.page-item > a:hover {
+    z-index: 2;
+    color: #0a58ca;
+    background-color: #e9ecef;
+    border-color: #198754;
+}
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color: #198754;
+    border-color: #198754;
+}
+.paginate-active > a{
+    background-color: #198754;
+    border-color: #198754;
+}
+.page-link{
+    background-color: #198754;
+}
+.pagination > .disabled > a, .pagination > .disabled > a:hover, .pagination > .disabled > a:focus {
+    color: #777;
+    cursor: not-allowed;
+    background-color: #fff;
+    border-color: #ddd;
+}
+/* ================================= */
+
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
+table tr td:last-child, table tr th:last-child {
+    text-align: right;
+}
+
+.wth-50 {
+    width: 50px;
+}
+
+.wth-300 {
+    width: 300px;
+}
+
+.wrap-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-auto {
+    margin: auto;
+}
+
+.wp-100 {
+    width: 100%;
+}
+
+.nav-tabs {
+    margin-bottom: 15px;
+}
+.sign-with {
+    margin-top: 25px;
+    padding: 20px;
+}
+div#OR {
+    height: 50px;
+    width: 50px;
+    border: 1px solid #C2C2C2;
+    border-radius: 50%;
+    font-weight: bold;
+    line-height: 45px;
+    text-align: center;
+    font-size: 12px;
+    float: right;
+    position: absolute;
+    right: 244px;
+    top: 33%;
+    z-index: 1;
+    background: #DFDFDF;
+}
+
+.float-right{
+    float: right;
+}
+
+.w-100{
+    width: 100px;
+}
+
+.main {
+    min-height: calc(100vh - 206px);
+}
+
+.footer-border {
+    border-top: solid 1px;
+}
