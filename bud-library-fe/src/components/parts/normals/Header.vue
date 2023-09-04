@@ -7,16 +7,18 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <router-link to="/" class="nav-link main-color home">Đầu sách<span class="sr-only">(current)</span></router-link>
+        <li class="nav-item home">
+          <router-link to="/" class="nav-link main-color">Đầu sách<span class="sr-only">(current)</span></router-link>
         </li>
-        <li class="nav-item">
-          <router-link :to="{ name: 'admin.books'}" class="nav-link main-color admin">Quản lý sách</router-link>
+        <li class="nav-item admin">
+          <router-link :to="{ name: 'admin.books'}" class="nav-link main-color">Quản lý sách</router-link>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Nhập nội dung tìm kiếm" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0 main-color" type="submit">Tìm kiếm</button>
+        <router-link :to="{ name: 'search'}">
+            <button class="btn btn-outline-success my-2 my-sm-0 main-color">Tìm kiếm</button>
+        </router-link>
       </form>
     </div>
   </nav>
@@ -31,22 +33,22 @@ export default {
 
     }
   },
-  created() {
+  updated() {
     // const currentUrl = window.location.pathname;
+    // console.log(currentUrl)
     // var collection = null
     // if(currentUrl.includes('admin')){
     //   collection = document.getElementsByClassName("admin")[0]
     // } else{
     //   collection = document.getElementsByClassName("home")[0]
     // }
-    // collection.style.fontWeight  = 'bold'
+    // console.log(collection)
   },
   computed: {
 
   },
   watch: {},
   methods: {
-  
   }
 }
 </script>

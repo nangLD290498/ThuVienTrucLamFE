@@ -9,4 +9,5 @@ export default [
         path: '/admin/books/add',
         component: () => import('../components/admin/books/Add.vue')
     },
+    
 ];

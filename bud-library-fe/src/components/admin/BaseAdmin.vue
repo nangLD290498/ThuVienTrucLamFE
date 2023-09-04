@@ -9,7 +9,6 @@
 
 <script>
 import { defineComponent, isProxy, toRaw } from "vue";
-// import Header from "../commons/Header";
 import Header from '../parts/normals/Header.vue'
 
 export default defineComponent({

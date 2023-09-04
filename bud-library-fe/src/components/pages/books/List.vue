@@ -14,16 +14,18 @@
           <div v-for="book in books" class="col-3" :key="book">
             <div class="card card-warning" style="max-width: 260px; max-height: 365px; margin: auto;">
               <div class="card-body" style="height: 300px;">
-                <a href="#">
-                    <img :src="getThumbnailUrl(book.id)" style='height: 100%; width: 100%; object-fit: contain; background-color: #f4f6f9;'/>
-                </a>
+                <router-link :to="{name: 'books.read', params: { id: book.id }}">
+                  <img :src="getThumbnailUrl(book.id)" style='height: 100%; width: 100%; object-fit: contain; background-color: #f4f6f9;'/>
+                </router-link>
               </div>
               <div class="card-details" style="height: 95px; padding-left: 10px;">
+                <router-link :to="{name: 'books.read', params: { id: book.id }}">
                   <a href="#"><p class="main-color-light" id="book-name"> {{book.name}} </p></a>
                   <a href="#">
                     <p class="details">Tác giả: sư ông Thanh Từ</p>
                     <p class="details">Xuất bản: 2021</p>
-                  </a>
+                  </a>    
+                </router-link>
                 </div>
             </div>
           </div>

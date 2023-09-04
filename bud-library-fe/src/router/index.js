@@ -27,6 +27,12 @@ const routes = [
         component: () =>
             import ("../components/pages/error/403.vue"),
     },
+    {
+        name: 'ViewPdf',
+        path: '/books/read/:id',
+        component: () =>
+            import ("../components/pages/books/ViewPdf.vue")
+    },
 ];
 
 export const router = VueRouter.createRouter({

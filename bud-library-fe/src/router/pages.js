@@ -15,5 +15,10 @@ export default [
         name: 'allBooks',
         path: '/books',
         component: () => import('../components/pages/books/ListAll.vue')
+    },{
+        name: "search",
+        path: "/findGeneral",
+        component: () =>
+            import ("../components/search/SearchGeneral.vue"),
     },
 ];

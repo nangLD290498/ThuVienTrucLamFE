@@ -7,7 +7,6 @@
           <div class="col-md-12">
             <div class="float-right">
               <router-link to="/admin/books/add" class="btn btn-success">Thêm sách</router-link>
-<!--              <button class="btn btn-danger mx-2 trigger--fire-modal-confirm" data-toggle="modal" data-target="#fire-modal-confirm">Delete all</button>-->
             </div>
           </div>
         </div>
