@@ -197,11 +197,18 @@ export default {
             this.pageRight += 2;
         },
         handlerFunction(event) {
+            console.log("length: ",window.getSelection().toString() , window.getSelection().toString().length, this.hasSelectedString)
             if(
                 window.getSelection().toString().length > 0
                 && this.hasSelectedString == true
-                // && window.getSelection().toString().length === this.hasSelectedString.length
             ) {
+                return;
+            }
+            let pattern = /^[a-z0-9]$/i;
+            if(
+                window.getSelection().toString().length == 1
+                && !pattern.test(window.getSelection().toString())
+            ){
                 return;
             }
 
