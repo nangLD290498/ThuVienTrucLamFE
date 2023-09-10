@@ -36,7 +36,7 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Tên sách</th>
-                  <th scope="col">Tác giả</th>
+                  <th scope="col">Chi tiết</th>
                   <th scope="col"></th>
                 </tr>
                 </thead>

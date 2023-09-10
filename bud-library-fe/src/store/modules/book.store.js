@@ -1,6 +1,7 @@
 import {
     apiGetList,
     apiGetById,
+    apiGetListByCate,
     apiPost,
     apiUpdate,
     apiDelete,
@@ -23,13 +24,27 @@ const getDataFromLS = () => {
 };
 const books = getDataFromLS();
 const state = books
-    ? { books: books, pageCount: 0, topBooks: [], liquidationBooks: [] }
-    : { books: {}, pageCount: 0, topBooks: [], liquidationBooks: [] };
+    ? { books: books, pageCount: 0, topBooks: [], liquidationBooks: [], cateId: 0, category: '' }
+    : { books: {}, pageCount: 0, topBooks: [], liquidationBooks: [], cateId: 0, category: '' };
 
 const actions = {
     get({ commit }, filter) {
         return new Promise((resolve, reject) => {
             apiGetList(filter)
+                .then(response => {
+                    commit("setDatas", response.data.content.elements);
+                    commit("setTotal", response.data.content.numberOfElements);
+                    commit("setPageCount", response.data.last_page);
+                    resolve(response);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    },
+    getByCate({ commit }, filter) {
+        return new Promise((resolve, reject) => {
+            apiGetListByCate(filter)
                 .then(response => {
                     commit("setDatas", response.data.content.elements);
                     commit("setTotal", response.data.content.numberOfElements);

@@ -29,12 +29,11 @@ const state = bookcases
       };
 
 const actions = {
-    get({ commit }, filter) {
+    get({ commit }) {
         return new Promise((resolve, reject) => {
-            apiGetList(filter)
+            apiGetList()
                 .then(response => {
-                    commit("setDatas", response.data.data);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setDatas", response.data.content);
                     resolve(response);
                 })
                 .catch(function(error) {

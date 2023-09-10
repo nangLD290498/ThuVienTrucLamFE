@@ -4,7 +4,6 @@ import modules from './modules'; // import the auto exporter
 import { STORAGE_BASE_INFO,  STORAGE_AREA_INFO} from '../config/constants';
 import httpClient from '../api/httpClient'
 
-// Vue.use(Vuex);
 
 const getStorageBaseInfo = () => {
 	const baseInfo = localStorage.getItem(STORAGE_BASE_INFO);

@@ -1,17 +1,16 @@
 <template>
-  <div class="categories" v-for="cate in nldCateList" :key="cate">
+  <div class="categories" v-for="cate in bookcases" :key="cate.id">
     <div>
       <section class="section">
         <div class="section-header d-block p-3">
           <div class="section-title m-0 main-color">
-            <router-link to="/books" class = "cate">Kinh</router-link>
+            <router-link :to="{name: 'allBooks' , params: { id: cate.id, name: cate.name }}" class = "cate">{{cate.name}}</router-link>
           </div>
         </div>
       </section>
 
       <div class="row">
-        <div v-for="item in nldTestList" :key="item">
-          <div v-for="book in books" class="col-3" :key="book">
+          <div v-for="book in cate.books" class="col-3" :key="book">
             <div class="card card-warning" style="max-width: 260px; max-height: 365px; margin: auto;">
               <div class="card-body" style="height: 300px;">
                 <router-link :to="{name: 'books.read', params: { id: book.id }}">
@@ -22,15 +21,13 @@
                 <router-link :to="{name: 'books.read', params: { id: book.id }}">
                   <a href="#"><p class="main-color-light" id="book-name"> {{book.name}} </p></a>
                   <a href="#">
-                    <p class="details">Tác giả: sư ông Thanh Từ</p>
-                    <p class="details">Xuất bản: 2021</p>
+                    <p class="details">Tác giả: {{ book.author }}</p>
+                    <p class="details">Xuất bản: {{ book.publishedYear }}</p>
                   </a>    
                 </router-link>
                 </div>
             </div>
-          </div>
-        </div>
-        
+          </div>       
       </div>
     </div>
   </div>
@@ -47,19 +44,17 @@ export default {
     return {
       page: CONSTANT.DEFAULT_PAGE,
       config: config,
-      nldTestList: [ 1, 2 ,3 ,4 ],
-      nldCateList: [ 1, 2 ,3 ,4 ]
     }
   },
   created() {
     this.getData();
   },
   computed: {
-    ...mapState('Book', ['books', 'pageCount'])
+    ...mapState('Bookcase', ['bookcases'])
   },
   methods: {
     getData() {
-      this.$store.dispatch('Book/get', {page: 1 });
+      this.$store.dispatch('Bookcase/get');
     },
     getThumbnailUrl(bookId) {
       return this.config.VUE_APP_BASE_URL + `/books/${bookId}/thumbnail`;

@@ -14,12 +14,13 @@
           <router-link :to="{ name: 'admin.books'}" class="nav-link main-color">Quản lý sách</router-link>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Nhập nội dung tìm kiếm" aria-label="Search">
-        <router-link :to="{ name: 'search'}">
+      <div class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" v-model="searchText" placeholder="Nhập nội dung tìm kiếm" aria-label="Search">
+        <router-link v-if="searchText" :to="{ name: 'search', params: { search: searchText}}">
             <button class="btn btn-outline-success my-2 my-sm-0 main-color">Tìm kiếm</button>
         </router-link>
-      </form>
+        <button v-else class="btn btn-outline-success my-2 my-sm-0 main-color">Tìm kiếm</button>
+      </div>
     </div>
   </nav>
 </template>
@@ -30,7 +31,7 @@ export default {
   props: [],
   data() {
     return {
-
+      searchText: ''
     }
   },
   updated() {

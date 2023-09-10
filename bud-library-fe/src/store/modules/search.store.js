@@ -1,31 +1,33 @@
 import {
     apiGetList,
-    apiGetById,
+    apiCategories,
     apiPost,
     apiUpdate,
     apiDelete
-} from "@/api/author.api";
+} from "@/api/search.api";
 
 const getDataFromLS = () => {
-    const authors = localStorage.getItem("authors");
-    if (authors) {
+    const searchItems = localStorage.getItem("searchItems");
+    if (searchItems) {
         try {
-            return JSON.parse(authors);
+            return JSON.parse(searchItems);
         } catch (e) {
             return null;
         }
     }
     return null;
 };
-const authors = getDataFromLS();
-const state = authors
+const searchItems = getDataFromLS();
+const state = searchItems
     ? {
-          authors: authors,
-          pageCount: 0
+        searchItems: searchItems,
+        pageCount: 0,
+        totalElements: 0
       }
     : {
-          authors: [],
-          pageCount: 0
+        searchItems: [],
+        pageCount: 0,
+        totalElements: 0
       };
 
 const actions = {
@@ -33,20 +35,11 @@ const actions = {
         return new Promise((resolve, reject) => {
             apiGetList(filter)
                 .then(response => {
-                    commit("setDatas", response.data.data);
-                    localStorage.setItem('authors', response.data.data);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setDatas", response.data.content);
+                    //localStorage.setItem('searchItems', response.data.data);
+                    commit("setTotalElements", response.data.totalElements);
                     resolve(response);
                 })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
-    },
-    findById({}, id) {
-        return new Promise((resolve, reject) => {
-            apiGetById(id)
-                .then(response => resolve(response))
                 .catch(function(error) {
                     reject(error);
                 });
@@ -88,11 +81,14 @@ const actions = {
 };
 
 const mutations = {
-    setDatas(state, authors) {
-        state.authors = authors;
+    setDatas(state, searchItems) {
+        state.searchItems = searchItems;
     },
     setPageCount(state, pageCount) {
         state.pageCount = pageCount;
+    },
+    setTotalElements(state, totalElements) {
+        state.totalElements = totalElements;
     }
 };
 

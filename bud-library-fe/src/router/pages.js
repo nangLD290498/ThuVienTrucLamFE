@@ -13,11 +13,11 @@ export default [
     },
     {
         name: 'allBooks',
-        path: '/books',
+        path: '/books/ByCate/:id/:name',
         component: () => import('../components/pages/books/ListAll.vue')
     },{
         name: "search",
-        path: "/findGeneral",
+        path: "/findGenerals/:search",
         component: () =>
             import ("../components/search/SearchGeneral.vue"),
     },
