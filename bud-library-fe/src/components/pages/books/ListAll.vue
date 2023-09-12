@@ -26,6 +26,19 @@
           </div>
         </div>      
     </div>
+    <nav class="text-center">
+      <paginate
+        v-model="page"
+        :page-count="pageCount"
+        :page-range="3"
+        :margin-pages="2"
+        :click-handler="clickCallback"
+        :container-class="'pagination'"
+        :page-class="'page-item'"
+        :next-link-class="'page-link'"
+        :prev-link-class="'page-link'">
+      </paginate>
+      </nav>
   </div>
 </template>
 
@@ -33,9 +46,13 @@
 import { mapState } from 'vuex';
 import CONSTANT from '../../../config/constants';
 import config from '../../../config/index';
+import Paginate from 'vuejs-paginate-next';
 
 export default {
   name: "ListBook",
+  components: {
+     paginate: Paginate,
+  },
   data() {
     return {
       page: CONSTANT.DEFAULT_PAGE,
@@ -51,8 +68,11 @@ export default {
     ...mapState('Book', ['books', 'pageCount'])
   },
   methods: {
+    clickCallback() {
+      this.getData();
+    },
     getData() {
-      this.$store.dispatch('Book/getByCate', {cateId: this.id, page: 1})
+      this.$store.dispatch('Book/getByCate', {cateId: this.id, page: this.page})
     },
     getThumbnailUrl(bookId) {
       return this.config.VUE_APP_BASE_URL + `/books/${bookId}/thumbnail`;
@@ -83,6 +103,14 @@ export default {
     }
     .row .col-3{
       max-width: 100%;
+      margin-bottom: 50px;
+    }
+      .pagination{
+      display: inline-flex;
+    }
+    .text-center{
+      padding-top: 14px;
+      background-color: white;
       margin-bottom: 50px;
     }
 </style>

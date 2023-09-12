@@ -18,19 +18,6 @@
           <div class="card">
             <div class="card-body">
               <i><b><span>{{ total }}</span></b> books</i>
-              <nav class="text-center float-right">
-                <paginate
-                    v-model="page"
-                    :page-count="pageCount"
-                    :page-range="3"
-                    :margin-pages="2"
-                    :click-handler="clickCallback"
-                    :container-class="'pagination'"
-                    :page-class="'page-item'"
-                    :next-link-class="'page-link'"
-                    :prev-link-class="'page-link'">
-                </paginate>
-              </nav>
               <table class="table-hover table">
                 <thead>
                 <tr>
@@ -81,6 +68,7 @@
 <script>
 import CONSTANT from '../../../config/constants';
 import { mapState } from 'vuex';
+import Paginate from 'vuejs-paginate-next';
 
 export default {
   data() {
@@ -94,41 +82,12 @@ export default {
     ...mapState('Book', ['books', 'pageCount', 'total'])
   },
   components: {
+     paginate: Paginate,
   },
   created() {
-    this.getPageNum();
     this.getData();
   },
   methods: {
-    filter() {
-      let _this = this;
-      this.filterParams.page = this.page;
-      this.$store.dispatch('Book/get', this.filterParams).then(() => {
-      }).catch(function (error) {
-        _this.$notify({type: 'error', text: 'Execute failed!'});
-      });
-    },
-    truncateBooks() {
-      let _this = this;
-      this.$store.dispatch('Book/truncate')
-          .then(() => {
-            this.$notify({type: 'success', text: 'Delete successfully!'});
-            document.getElementById("close-confirm-modal").click();
-            this.getData();
-          }).catch(function (error) {
-        _this.$notify({type: 'error', text: 'Execute failed!'});
-      });
-    },
-    _delete(book) {
-      let _this = this;
-      this.$store.dispatch('Book/delete', book)
-          .then(() => {
-            this.$notify({type: 'success', text: 'Delete successfully!'});
-            this.getData();
-          }).catch(function (error) {
-        _this.$notify({type: 'error', text: 'Execute failed!'});
-      });
-    },
     getData() {
       let _this = this;
       this.$store.dispatch('Book/get', {page: this.page}).then(() => {
@@ -136,18 +95,9 @@ export default {
         _this.$notify({type: 'error', text: 'Execute failed!'});
       });
     },
-    clickCallback(page) {
-      this.page = page;
-      this.$router.replace({name: "books", query:{page: page}});
+    clickCallback() {
       this.getData();
     },
-    getPageNum() {
-      if(this.$route.query.page)
-        this.page = parseInt(this.$route.query.page);
-    },
-    isConfirm() {
-      this.truncateBooks();
-    }
   }
 }
 </script>
@@ -162,5 +112,12 @@ export default {
   }
   .section {
     position: inherit;
+  }
+  .pagination{
+     display: inline-flex;
+  }
+  .text-center{
+    padding-top: 14px;
+    background-color: whitesmoke;
   }
 </style>

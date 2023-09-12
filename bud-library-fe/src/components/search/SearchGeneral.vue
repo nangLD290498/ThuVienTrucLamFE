@@ -1,18 +1,18 @@
 <template>
-    <div class="search-body">
+    <div class="search-body" >
         <div>
             <section class="section">
             <div class="section-header d-block p-3">
-                <div class="section-title m-0 main-color">Kết quả tìm kiếm {{ category }}</div>
+                <div class="section-title m-0 main-color">Kết quả tìm kiếm</div>
             </div>
             </section>
         </div>
-        <select name="categories" id="cate" v-model="category" @change="reloadSearchResult(category)">
+        <select name="categories" id="cate" v-model="category" @change="reloadSearchResult(category)" v-if="totalElementsV2 > 0">
           <option value="*">Tất cả</option>
           <option v-for="cate in categories" :key="cate" :value="cate" >{{ cate }}</option>
         </select>
         <h6>{{ totalElementsV2 }} kết quả</h6><br>
-        <div class="table">
+        <div class="table" v-if="totalElementsV2 > 0">
             <table>
                 <tr>
                     <th>#</th>
@@ -38,37 +38,62 @@
                 </tr>
             </table>
         </div>
+        <nav class="text-center" v-if="totalElementsV2 > 0">
+            <paginate
+              v-model="page"
+              :page-count="pageCount"
+              :page-range="3"
+              :margin-pages="2"
+              :click-handler="clickCallback"
+              :container-class="'pagination'"
+              :page-class="'page-item'"
+              :next-link-class="'page-link'"
+              :prev-link-class="'page-link'">
+            </paginate>
+          </nav>
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import Paginate from 'vuejs-paginate-next';
+import CONSTANT from '../../config/constants';
 
 export default {
+  components: {
+     paginate: Paginate,
+  },
   data() {
     return {
       searchText: this.$route.params.search,
       category: '*',
       searchItemsV2: [],
+      pageCount: 0,
       totalElementsV2: 0,
+      page: CONSTANT.DEFAULT_PAGE,
     }
   },
   created() {
     this.getData();
+    console.log("count ", this.pageCount)
   },
   computed: {
     ...mapState('Category', ['categories'])
   },
   methods: {
+    clickCallback() {
+      this.getData();
+    },
     getData() {
-      this.$store.dispatch('Search/get', {page: 1, searchText: this.searchText, category: this.category}).then(response => {
+      this.$store.dispatch('Search/get', {page: this.page, searchText: this.searchText, category: this.category}).then(response => {
               this.searchItemsV2 = response.data.content;
               this.totalElementsV2 = response.data.totalElements;
+              this.pageCount = response.data.totalPages;
             });
       this.$store.dispatch('Category/get');
     },
     reloadSearchResult(cate) {
-      console.log("loggg")
+      this.page = 1
       this.$store.dispatch('Search/get', {page: 1, searchText: this.searchText, category: cate}).then(response => {
               this.searchItemsV2 = response.data.content;
               this.totalElementsV2 = response.data.totalElements;
@@ -108,5 +133,8 @@ h6{
 }
 .table{
   margin-bottom: 50px;
+}
+.pagination{
+  float:right;
 }
 </style>

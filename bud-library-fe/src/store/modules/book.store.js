@@ -34,7 +34,7 @@ const actions = {
                 .then(response => {
                     commit("setDatas", response.data.content.elements);
                     commit("setTotal", response.data.content.numberOfElements);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setPageCount", response.data.content.totalPages);
                     resolve(response);
                 })
                 .catch(function(error) {
@@ -48,7 +48,7 @@ const actions = {
                 .then(response => {
                     commit("setDatas", response.data.content.elements);
                     commit("setTotal", response.data.content.numberOfElements);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setPageCount", response.data.content.totalPages);
                     resolve(response);
                 })
                 .catch(function(error) {

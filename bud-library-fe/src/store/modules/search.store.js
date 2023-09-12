@@ -38,6 +38,7 @@ const actions = {
                     commit("setDatas", response.data.content);
                     //localStorage.setItem('searchItems', response.data.data);
                     commit("setTotalElements", response.data.totalElements);
+                    commit("setPageCount", response.data.totalPages);
                     resolve(response);
                 })
                 .catch(function(error) {
