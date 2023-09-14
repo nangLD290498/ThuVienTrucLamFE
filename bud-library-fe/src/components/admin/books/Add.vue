@@ -33,8 +33,42 @@
 
                 <div class="col-12">
                   <div class="mb-3">
+                    <label for="exampleFormControlTextarea1"  class="form-label p-0 m-0" >Thể loại</label>
+                    <select  class="form-control" v-model="category"  v-if="categories">
+                      <option v-for="cate in categories" :key="cate" :value="cate" >{{ cate }}</option>
+                    </select>
+                    <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Tên sách</label>
                     <input type="text" v-model='book.name' class="form-control"/>
+                    <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Tác giả</label>
+                    <input type="text" v-model='book.author' class="form-control"/>
+                    <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Nhà xuất bản</label>
+                    <input type="text" v-model='book.publisher' class="form-control"/>
+                    <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Năm xuất bản</label>
+                    <input type="number" v-model='book.publishedYear' class="form-control"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -45,7 +79,6 @@
                       <div class="d-flex">
                         <div style="width: 100%;">Mục lục</div>
                         <div class="btn btn-outline-success ml-2" @click="addChild()">+</div>
-<!--                        <div class="btn btn-outline-success ml-2" @click="addChild()">-</div>-->
                       </div>
                     </div>
 
@@ -75,12 +108,16 @@
 <script>
 import CONSTANT, {dump_menus} from '../../../config/constants';
 import TreeNode from "@/components/commons/TreeNode.vue";
+import { mapState } from 'vuex';
 
 export default {
   data() {
     return {
       book: {
         name: '',
+        author: '',
+        publisher: '',
+        publishedYear: 2015,
         tableContents: [
           {
             "headerContent" : "",
@@ -89,16 +126,18 @@ export default {
         ],
       },
       mode: CONSTANT.CREATE,
-      CREATE: CONSTANT.CREATE,
       error: {},
       PDF_FILE: null,
       THUMB_FILE: null,
+      category: 'Chọn thể loại',
+      isSaved: '',
     };
   },
   components: {
     TreeNode,
   },
   created() {
+    this.getData();
     if (this.$route.params.id) {
       this.$store.dispatch('Book/findById', this.$route.params.id)
           .then(response => this.book = response.data);
@@ -106,45 +145,63 @@ export default {
       this.mode = CONSTANT.UPDATE;
     }
   },
+  computed: {
+    ...mapState('Category', ['categories'])
+  },
   methods: {
+    getData() {
+      this.$store.dispatch('Category/get');
+    },
     excute() {
       let _this = this;
+        try { 
+        let bookInfo = {
+          "name": this.book.name,
+          "author": this.book.author,
+          "publisher": this.book.publisher,
+          "publishedYear": this.book.publishedYear.toString(),
+          "remarks": "",
+          "category": {
+            "name": this.category,
+            "remarks": ""
+          }
+        };
 
-      let bookInfo = {
-        "name": this.book.name,
-        "author": "Thích Thanh Từ",
-        "publisher": "NBX tôn giáo VN",
-        "publishedYear": "1990",
-        "remarks": "",
-        "category": {
-          "name": "Kiến thức",
-          "remarks": ""
+        let tableContents = this.book.tableContents;
+
+        console.log('bookInfo', bookInfo);
+        console.log('tableContents', this.book.tableContents);
+
+        // upload file
+        const formData = new FormData();
+        formData.append('file', this.PDF_FILE, this.PDF_FILE.name);
+        formData.append('thumbnailPic', this.THUMB_FILE, this.THUMB_FILE.name);
+        formData.append('bookString', btoa(unescape(encodeURIComponent(JSON.stringify(bookInfo)))));
+        formData.append('tableContent', btoa(unescape(encodeURIComponent(JSON.stringify(tableContents)))));
+
+        this.$store.dispatch('Book/' + this.mode, formData)
+        .then((response) => {
+              this.status = response.data.status
+              console.log("status: ", response.data.status)
+              if(response.data.status === 'NOK'){
+                 _this.$notify({type: 'error', text: response.data.message});
+                 return;
+              }else{
+                _this.$notify({type: 'success', text: 'Thêm sách thành công!'});
+                _this.$router.push({ name: "admin.books" })
+              }
+        }).catch(function (error) {
+          if (error.response && error.response.data.error) {
+            _this.error = error.response.data.error;
+          } else {
+            _this.$notify({type: 'error', text: 'Hãy kiểm tra lại thông tin sách !'});
+          }
+        });
         }
-      };
-
-      let tableContents = this.book.tableContents;
-
-      console.log('bookInfo', bookInfo);
-      console.log('tableContents', this.book.tableContents);
-
-      // upload file
-      const formData = new FormData();
-      formData.append('file', this.PDF_FILE, this.PDF_FILE.name);
-      formData.append('thumbnailPic', this.THUMB_FILE, this.THUMB_FILE.name);
-      formData.append('bookString', btoa(unescape(encodeURIComponent(JSON.stringify(bookInfo)))));
-      formData.append('tableContent', btoa(unescape(encodeURIComponent(JSON.stringify(tableContents)))));
-
-      this.$store.dispatch('Book/' + this.mode, formData)
-      .then(() => {
-            _this.$notify({type: 'success', text: 'Thêm sách thành công!'});
-            _this.$router.push({ name: "admin.books" })
-      }).catch(function (error) {
-        if (error.response && error.response.data.error) {
-          _this.error = error.response.data.error;
-        } else {
-          _this.$notify({type: 'error', text: 'Execute failed!'});
-        }
-      });
+      catch(err) {
+        console.log("Error: ", err)
+        _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
+      }
     },
     onFileUploadPdf (event) {
       this.PDF_FILE = event.target.files[0]

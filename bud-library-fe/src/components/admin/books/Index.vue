@@ -28,8 +28,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="book in books" :key="book.id">
-                  <td>{{ book.id }}</td>
+                <tr v-for=" (book, index) in books" :key="book.id">
+                  <td>{{ index + 1 + (page-1)*pageSize }}</td>
                   <td> <b>{{ book.name }} - {{ book.author }}</b></td>
                   <td>
                     <span class="badge badge-info"> {{ book.publisher }} </span>
@@ -74,6 +74,7 @@ export default {
   data() {
     return {
       page: CONSTANT.DEFAULT_PAGE,
+      pageSize: CONSTANT.PAGE_SIZE,
       filterParams: {},
 
     }

@@ -241,6 +241,7 @@ export default {
                 if (tableContentEle.fromPage <= this.pageLeft && tableContentEle.toPage >= this.pageLeft) {
                     this.selectedStringMenuParents = [tableContentEle.headerContent];
                     this.getParents(tableContentEle);
+                    console.log('set content table at ', tableContentEle);
                 }
             })
             $("#fire-modal").click();

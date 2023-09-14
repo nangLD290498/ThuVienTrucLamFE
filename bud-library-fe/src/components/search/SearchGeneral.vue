@@ -25,7 +25,7 @@
                     <th style="min-width:100px;">Chi tiết</th>
                 </tr>
                 <tr v-for="(item, index) in searchItemsV2" :key="item">
-                    <td>{{ index +1 }}</td>
+                    <td>{{ index + 1 + (page-1)*pageSize }}</td>
                     <td>{{ item.category }}</td>
                     <td>{{ item.book_name }}</td>
                     <td>{{ item.author }}</td>
@@ -71,6 +71,7 @@ export default {
       pageCount: 0,
       totalElementsV2: 0,
       page: CONSTANT.DEFAULT_PAGE,
+      pageSize: CONSTANT.PAGE_SIZE,
     }
   },
   created() {

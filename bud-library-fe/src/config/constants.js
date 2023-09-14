@@ -11,7 +11,7 @@ export default Object.freeze({
   REFUSE: "refuse",
   CLOSED: "closed",
   DEFAULT_PAGE: 1,
-  PAGE_SIZE: 50,
+  PAGE_SIZE: 20,
   PAGE_BOOK_LIST_SIZE: 48,
   FIRST_ELEMENT: 0,
   GREEN_COLOR: '#198754',
