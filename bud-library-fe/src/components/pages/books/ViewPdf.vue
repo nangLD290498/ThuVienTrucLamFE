@@ -1,5 +1,5 @@
 <template>
-    <section class="section" v-if="book">
+    <section class="section" v-if="book" >
         <div class = "content">
            <div class="col-12">
                 <div class="card card-warning" style="max-width: 2200px; margin: auto;">
@@ -8,10 +8,9 @@
                       <div class="col-1  px-0">
                           <a href="#" :class="'btn btn-icon btn-info ' + ((pageLeft == 1 || !isDoneLoading2 )? ' disabled' : '')"  style="margin: 0; position: absolute; top: 50%; -ms-transform: translateY(-50%); transform: translateY(-50%); transform: translateX(-50%); border-radius: 28px;" @click="prevPage()"><i class="fas fa-angle-left"></i></a>
                       </div>
-                      <div class="col-5 pl-0">
+                      <div @mouseup="handlerFunction" class="col-5 pl-0">
                         <div class = "page-content">
                             <vue-pdf-embed
-                            class=""
                             style="box-shadow: rgb(136, 136, 136) 5px 0px 10px 0px;"
                             @click="selectOnPage('LEFT')"
                             ref="pdfRef"
@@ -21,7 +20,7 @@
                         />
                         </div>
                       </div>
-                      <div class="col-5 mx-0 pr-0">
+                      <div @mouseup="handlerFunction" class="col-5 mx-0 pr-0">
                         <div class = "page-content">
                             <vue-pdf-embed
                                 style="box-shadow: rgb(136, 136, 136) 5px 10px 10px -10px;"
@@ -33,7 +32,7 @@
                         </div>
                       </div>
                       <div class="col-1 px-0">
-                        <a href="#" :class="'btn btn-icon btn-info' + (!isDoneLoading2? ' disabled' : '')" style="border-radius: 28px; top: 50%; position: absolute; transform: translateX(-50%);" @click="nextPage()"><i class="fas fa-angle-right"></i></a>
+                        <a href="#" :class="'btn btn-icon btn-info' + ((!isDoneLoading2 || isLastPage)? ' disabled' : '')" style="border-radius: 28px; top: 50%; position: absolute; transform: translateX(-50%);" @click="nextPage()"><i class="fas fa-angle-right"></i></a>
                       </div>
                     </div>
                   </div>
@@ -105,6 +104,21 @@
             </div>
         </div>
     </section>
+    <div class="app-header">
+        <template v-if="isLoading">
+        Loading...
+        </template>
+
+        <template v-else>
+        <span class="page-setting">
+            <input @keyup.enter="handlePageChange()" ref="selectPageInput" type="number" min="1" :max="pageCount" :value="pageLeft"  @focusout="handlePageChange()"/>
+            &nbsp;Trang {{ pageLeft }} - {{ pageRight }} / {{ pageCount }}
+        </span>
+        <router-link :to="{name: 'books.read', params: { id: $route.params.id }}">
+            <span class="close-sign">X</span>
+        </router-link>
+        </template>
+    </div>
 </template>
 
 <script>
@@ -136,7 +150,9 @@ export default {
             pagePosition: '',
             config: config,
             isDoneLoading: false,
-            isDoneLoading2: false
+            isDoneLoading2: false,
+            pageCount:0,
+            isLastPage: false,
         }
     },
     created() {
@@ -157,9 +173,32 @@ export default {
     computed: {
     },
     mounted() {
-        document.addEventListener('mouseup', this.handlerFunction, false);
+        // this.$refs.content.addEventListener('mouseup', this.handlerFunction, false);
+        // this.selectedPage = this.pageLeft
     },
     methods: {
+        handlePageChange(){
+            let selectedPage = parseInt(this.$refs.selectPageInput.value)
+            if(isNaN(selectedPage) || selectedPage == undefined || selectedPage == null 
+                                            || selectedPage<1 || selectedPage>this.pageCount){
+                this.$notify({type: 'error', text: 'Trang không hợp lệ !'});
+                return
+            }
+            if(selectedPage === this.pageLeft || selectedPage === this.pageRight){
+                this.$notify({type: 'warning', text: ('Bạn hiện đang ở trang ' + this.pageLeft + ' ' + this.pageRight +' !')});
+                return
+            }
+            if(selectedPage % 2 == 1){
+                this.isDoneLoading2 = false
+                this.pageLeft = selectedPage;
+                this.pageRight = selectedPage + 1;
+            } else {
+                this.isDoneLoading2 = false
+                this.pageRight = selectedPage;
+                this.pageLeft = selectedPage - 1;
+            }
+            this.$notify({type: 'success', text: 'Chuyển trang thành công'});
+        },
         getChilds(tableContent, parent, arrParents) {
             if (typeof tableContent.parent === 'undefined') tableContent.parent = parent;
 
@@ -177,7 +216,6 @@ export default {
             }
         },
         getParents(node) {
-            // let parents = [];
             if (node.parent != null) {
                 this.selectedStringMenuParents.push(node.parent.headerContent);
 
@@ -190,6 +228,7 @@ export default {
             this.isDoneLoading2 = false
             this.pageLeft -= 2;
             this.pageRight -= 2;
+            this.isLastPage = false
         },
         nextPage() {
             this.isDoneLoading2 = false
@@ -279,13 +318,40 @@ export default {
          handleDocumentRender() {
             this.isDoneLoading = true
             this.isDoneLoading2 = true
-            console.log('isLoading', this.isDoneLoading);
+            if(this.pageCount == 0){
+                this.pageCount = this.$refs.pdfRef.pageCount
+            }
+            if(this.pageRight == this.$refs.pdfRef.pageCount){
+                 this.isLastPage = true
+            }
+            console.log('handleDocumentRender isLoading', this.isDoneLoading);
         },
     }
 }
 </script>
 
 <style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  width: 43px;
+  height: 21px;
+}
+.close-sign{
+    float: right;
+    font-weight: bold;
+    cursor:pointer;
+    color: white;
+}
+.page-setting{
+    font-weight: bold;
+}
 html{
     background-color: rgb(231, 231, 231);
     position: relative;
@@ -384,5 +450,19 @@ html{
 }
 .section {
     position: inherit;
+}
+.app-header {
+    padding-bottom: 28px;
+    padding-top: 8px;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
+    background-color: #555;
+    color: #ddd;
+    bottom: 0px;
+    position: fixed;
+    width: 100%;
+    height: 5px;
+    /* opacity: 0.5; */
 }
 </style>

@@ -84,6 +84,7 @@ export default {
   methods: {
     clickCallback() {
       this.getData();
+      window.scrollTo(0, 0)
     },
     getData() {
       this.$store.dispatch('Search/get', {page: this.page, searchText: this.searchText, category: this.category}).then(response => {

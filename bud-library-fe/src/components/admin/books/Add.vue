@@ -129,7 +129,7 @@ export default {
       error: {},
       PDF_FILE: null,
       THUMB_FILE: null,
-      category: 'Chọn thể loại',
+      category: '',
       isSaved: '',
     };
   },
@@ -154,6 +154,18 @@ export default {
     },
     excute() {
       let _this = this;
+      if(this.book.name.trim() === '' ||
+             this.book.author.trim() === '' ||
+             this.book.publisher.trim() === '' ||
+             this.category == null ||
+             this.category.trim() === '' ||
+             this.PDF_FILE == null ||
+             !this.isContenTableValid(this.book.tableContents[0])
+      ){
+       _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
+        return
+      }
+
         try { 
         let bookInfo = {
           "name": this.book.name,
@@ -214,6 +226,13 @@ export default {
         "headerContent" : "",
         "childs" : []
       })
+    },
+    isContenTableValid(header){
+      if(header.headerContent === '' || header.fromPage == undefined || header.toPage == undefined
+          || header.fromPage == '' || header.toPage == '') {
+        return false
+      }
+      return true
     }
   }
 };

@@ -2,8 +2,8 @@
   <div :style="nodeMargin" class="mt-1">
     <div class="d-flex">
       <input v-model="node.headerContent" class="form-control"/>
-      <input v-model="node.fromPage" class="form-control" type="number" placeholder="từ trang" style="width: 100px;"/>
-      <input v-model="node.toPage" class="form-control" type="number" placeholder="đến trang" style="width: 100px;"/>
+      <input v-model="node.fromPage" min="1" class="form-control" type="number" placeholder="từ trang" style="width: 100px;"/>
+      <input v-model="node.toPage" min="1" class="form-control" type="number" placeholder="đến trang" style="width: 100px;"/>
       <div class="btn btn-outline-success ml-2 my-1" @click="addChild()">+</div>
     </div>
 
