@@ -4,40 +4,40 @@ import {
     apiPost,
     apiUpdate,
     apiDelete
-} from "@/api/district.api";
+} from "@/api/author.api";
 
 const getDataFromLS = () => {
-    const districts = localStorage.getItem("districts");
-    if (districts) {
+    const authors = localStorage.getItem("authors");
+    if (authors) {
         try {
-            return JSON.parse(districts);
+            return JSON.parse(authors);
         } catch (e) {
             return null;
         }
     }
     return null;
 };
-const districts = getDataFromLS();
-const state = districts
+const authors = getDataFromLS();
+const state = authors
     ? {
-          districts: districts,
-          pageCount: 0
+          authors: authors,
+          pageCount: 0,
+          total: 0
       }
     : {
-          districts: [],
-          pageCount: 0
+          authors: [],
+          pageCount: 0,
+          total: 0
       };
 
 const actions = {
-    loadCache({ commit }) {
-        commit("setDatas", getDataFromLS());
-    },
-    get({ commit }, filter) {
+    get({ commit }, page) {
         return new Promise((resolve, reject) => {
-            apiGetList(filter)
+            apiGetList(page)
                 .then(response => {
-                    commit("setDatas", response.data.data);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setDatas", response.data.content);
+                    commit("setPageCount", response.data.totalPages);
+                    commit("setTotal", response.data.totalElements);
                     resolve(response);
                 })
                 .catch(function(error) {
@@ -54,9 +54,9 @@ const actions = {
                 });
         });
     },
-    create({}, district) {
+    create({}, author) {
         return new Promise((resolve, reject) => {
-            apiPost(district)
+            apiPost(author)
                 .then(response => {
                     resolve(response);
                 })
@@ -65,9 +65,9 @@ const actions = {
                 });
         });
     },
-    update({}, district) {
+    update({}, author) {
         return new Promise((resolve, reject) => {
-            apiUpdate(district)
+            apiUpdate(author)
                 .then(response => {
                     resolve(response);
                 })
@@ -76,9 +76,9 @@ const actions = {
                 });
         });
     },
-    delete({}, district) {
+    delete({}, author) {
         return new Promise((resolve, reject) => {
-            apiDelete(district)
+            apiDelete(author)
                 .then(response => {
                     resolve(response);
                 })
@@ -90,11 +90,14 @@ const actions = {
 };
 
 const mutations = {
-    setDatas(state, districts) {
-        state.districts = districts;
+    setDatas(state, authors) {
+        state.authors = authors;
     },
     setPageCount(state, pageCount) {
         state.pageCount = pageCount;
+    },
+    setTotal(state, total) {
+        state.total = total;
     }
 };
 

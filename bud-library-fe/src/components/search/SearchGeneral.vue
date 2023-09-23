@@ -9,7 +9,7 @@
         </div>
         <select name="categories" id="cate" v-model="category" @change="reloadSearchResult(category)" v-if="totalElementsV2 > 0">
           <option value="*">Tất cả</option>
-          <option v-for="cate in categories" :key="cate" :value="cate" >{{ cate }}</option>
+          <option v-for="cate in categories" :key="cate.name" :value="cate.name" >{{ cate.name }}</option>
         </select>
         <h6>{{ totalElementsV2 }} kết quả</h6><br>
         <div class="table" v-if="totalElementsV2 > 0">

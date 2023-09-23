@@ -1,8 +1,17 @@
 <template>
   <div>
     <section class="section">
+      <!-- <div class="author detail-header">
+        <div  class="author avt">
+            <div  class="avt-wrapper"><img  alt="" src="https://api.phapbao.org/images/author-general.svg"></div>
+        </div>
+        <div  class="author-text">
+            <h4  class="author_name"> {{ author }} </h4>
+            <div class="author label"> Tiểu sử </div>
+        </div>
+      </div> -->
       <div class="section-header d-block p-3">
-        <div class="section-title m-0 main-color">{{ cateName }}</div>
+        <div class="section-title m-0 main-color">Tác giả {{ author }}</div>
         <p class = "all">Tất cả sách</p>
       </div>
     </section>
@@ -45,8 +54,8 @@
 
 <script>
 import { mapState } from 'vuex';
-import CONSTANT from '../../../config/constants';
-import config from '../../../config/index';
+import CONSTANT from '../../config/constants';
+import config from '../../config/index';
 import Paginate from 'vuejs-paginate-next';
 
 export default {
@@ -58,8 +67,7 @@ export default {
     return {
       page: CONSTANT.DEFAULT_PAGE,
       config: config,
-      id: this.$route.params.id,
-      cateName: this.$route.params.name,
+      author: this.$route.params.author,
     }
   },
   created() {
@@ -73,7 +81,7 @@ export default {
       this.getData();
     },
     getData() {
-      this.$store.dispatch('Book/getByCate', {cateId: this.id, page: this.page})
+      this.$store.dispatch('Book/getByAuthor', {author: this.author, page: this.page})
     },
     getThumbnailUrl(bookId) {
       return this.config.VUE_APP_BASE_URL + `/books/${bookId}/thumbnail`;
@@ -118,4 +126,18 @@ export default {
       background-color: white;
       margin-bottom: 50px;
     }
+     /* .author_name{
+      margin-top: 23px;
+    }
+    .detail-header{
+      display: flex;
+      margin-bottom: 75px;
+      justify-content: center;
+    }
+    .author-text{
+      width: auto;
+    }
+    .avt{
+      width: 100px;
+    } */
 </style>

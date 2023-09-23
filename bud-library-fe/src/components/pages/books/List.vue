@@ -4,7 +4,9 @@
       <section class="section">
         <div class="section-header d-block p-3">
           <div class="section-title m-0 main-color">
-            <router-link :to="{name: 'allBooks' , params: { id: cate.id, name: cate.name }}" class = "cate">{{cate.name}}</router-link>
+            <router-link :to="{name: 'allBooks' , params: { id: cate.id, name: cate.name }}" class = "cate">
+              {{cate.name}}
+            </router-link>
           </div>
         </div>
       </section>

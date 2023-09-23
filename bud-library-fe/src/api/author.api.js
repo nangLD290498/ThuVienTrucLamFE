@@ -1,12 +1,12 @@
 import httpClient from './httpClient';
 import { serializeObjectToParams } from '../helpers';
 
-const END_POINT = '/districts';
+const END_POINT = '/author';
 const CREATE_END_POINT = END_POINT + '/create';
 const UPDATE_END_POINT = END_POINT + '/update/';
 const DELETE_END_POINT = END_POINT + '/delete/';
 
-const apiGetList = (filter) => httpClient.get(END_POINT + '?' + serializeObjectToParams(filter));
+const apiGetList = (page) => httpClient.get(END_POINT + '?' + serializeObjectToParams(page));
 const apiGetById = (id) => httpClient.get(END_POINT + '/' + id);
 const apiPost = (record) => httpClient.post(CREATE_END_POINT, record);
 const apiUpdate = (record) => httpClient.post(UPDATE_END_POINT + record.id, record);

@@ -2,6 +2,7 @@ import {
     apiGetList,
     apiGetById,
     apiGetListByCate,
+    apiGetListByAuthor,
     apiPost,
     apiUpdate,
     apiDelete,
@@ -45,6 +46,20 @@ const actions = {
     getByCate({ commit }, filter) {
         return new Promise((resolve, reject) => {
             apiGetListByCate(filter)
+                .then(response => {
+                    commit("setDatas", response.data.content.elements);
+                    commit("setTotal", response.data.content.numberOfElements);
+                    commit("setPageCount", response.data.content.totalPages);
+                    resolve(response);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    },
+    getByAuthor({ commit }, filter) {
+        return new Promise((resolve, reject) => {
+            apiGetListByAuthor(filter)
                 .then(response => {
                     commit("setDatas", response.data.content.elements);
                     commit("setTotal", response.data.content.numberOfElements);

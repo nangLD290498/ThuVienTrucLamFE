@@ -2,10 +2,10 @@
   <section class="section">
     <div class="section-header ">
       <div class="section-title mt-0">Thêm sách</div>
-      <div class="section-header-breadcrumb">
+      <!-- <div class="section-header-breadcrumb">
         <div class="breadcrumb-item"><a href="#">Quản lý sách</a></div>
         <div class="breadcrumb-item">Thêm sách</div>
-      </div>
+      </div> -->
     </div>
 
     <div class="section-body">
@@ -35,7 +35,7 @@
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1"  class="form-label p-0 m-0" >Thể loại</label>
                     <select  class="form-control" v-model="category"  v-if="categories">
-                      <option v-for="cate in categories" :key="cate" :value="cate" >{{ cate }}</option>
+                      <option v-for="cate in categories" :key="cate" :value="cate.name" >{{ cate.name }}</option>
                     </select>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>

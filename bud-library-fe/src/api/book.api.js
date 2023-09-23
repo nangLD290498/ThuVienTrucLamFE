@@ -10,9 +10,9 @@ const LIQUIDATION_BOOKS_END_POINT = '/liquidation-books';
 const AVAIABLE_LIQUIDATION_BOOKS_END_POINT = '/avaiable-liquidation-books';
 const BOOK_BY_BARCODES_END_POINT = END_POINT + '/barcode';
 
-// const apiGetList = (from, to, filter) => httpClient.get(END_POINT + `/getList/${from}/${to}/ASC/name` + '?' + serializeObjectToParams(filter));
 const apiGetList = (filter) => httpClient.get(END_POINT + '?' + serializeObjectToParams(filter));
 const apiGetListByCate = (filter) => httpClient.get(END_POINT + '/ByCategory/' + filter.cateId+ '?page=' + filter.page);
+const apiGetListByAuthor = (filter) => httpClient.get(END_POINT + '/ByAuthor?author=' + filter.author+ '&page=' + filter.page);
 const apiGetById = (id) => httpClient.get(END_POINT + '/' + id);
 const apiPost = (record) => httpClient.post(END_POINT, record);
 const apiUpdate = (record) => httpClient.post(UPDATE_END_POINT + record.id, record);
@@ -25,6 +25,7 @@ const apiGetByBarcode = (barcode) => httpClient.get(BOOK_BY_BARCODES_END_POINT +
 export {
     apiGetList,
     apiGetListByCate,
+    apiGetListByAuthor,
     apiGetById,
     apiPost,
     apiUpdate,
