@@ -23,7 +23,7 @@ export default [
     },
     {
         name: "search",
-        path: "/findGenerals/:search",
+        path: "/findGenerals",
         component: () =>
             import ("../components/search/SearchGeneral.vue"),
     },

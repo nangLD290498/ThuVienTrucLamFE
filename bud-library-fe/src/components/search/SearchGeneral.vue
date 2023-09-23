@@ -1,5 +1,14 @@
 <template>
-    <div class="search-body" >
+    <div class="row search-bar">
+            <i  class="fas fa-book-open mr-2"></i>
+            <select name="categories" id="cate" v-model="category" @change="reloadSearchResult(category, 1)">
+              <option value="*">Tất cả</option>
+              <option v-for="cate in categories" :key="cate.name" :value="cate.name" >{{ cate.name }}</option>
+            </select>
+            <input v-model="searchText"  class="ng-tns-c84-8 ui-inputtext ui-widget ui-state-default ui-corner-all ui-autocomplete-input ng-star-inserted" type="text" placeholder="Tìm kiếm: kinh trường bộ hoặc như lai + công đức" size="50">
+            <button class="btn-search" @click="reloadSearchResult(category, 1)"><i class="fas fa-search fa-fw"></i></button>
+    </div>
+    <div class="search-body" style="margin: 40px 100px;" >
         <div>
             <section class="section">
             <div class="section-header d-block p-3">
@@ -7,10 +16,6 @@
             </div>
             </section>
         </div>
-        <select name="categories" id="cate" v-model="category" @change="reloadSearchResult(category)" v-if="totalElementsV2 > 0">
-          <option value="*">Tất cả</option>
-          <option v-for="cate in categories" :key="cate.name" :value="cate.name" >{{ cate.name }}</option>
-        </select>
         <h6>{{ totalElementsV2 }} kết quả</h6><br>
         <div class="table" v-if="totalElementsV2 > 0">
             <table>
@@ -65,7 +70,7 @@ export default {
   },
   data() {
     return {
-      searchText: this.$route.params.search,
+      searchText: '',
       category: '*',
       searchItemsV2: [],
       pageCount: 0,
@@ -74,38 +79,57 @@ export default {
       pageSize: CONSTANT.PAGE_SIZE,
     }
   },
-  created() {
-    this.getData();
-    console.log("count ", this.pageCount)
-  },
   computed: {
     ...mapState('Category', ['categories'])
   },
+  created(){
+    this.$store.dispatch('Category/get');
+  },
   methods: {
     clickCallback() {
-      this.getData();
+      this.reloadSearchResult(this.category, this.page);
       window.scrollTo(0, 0)
     },
-    getData() {
-      this.$store.dispatch('Search/get', {page: this.page, searchText: this.searchText, category: this.category}).then(response => {
+    reloadSearchResult(cate, page) {
+      console.log("searchText: ", this.searchText)
+      if(!this.searchText == null && !this.searchText == undefined  || !this.searchText.trim() == ''){
+        this.page = page
+        this.$store.dispatch('Search/get', {page: page, searchText: this.searchText, category: cate}).then(response => {
               this.searchItemsV2 = response.data.content;
               this.totalElementsV2 = response.data.totalElements;
               this.pageCount = response.data.totalPages;
             });
-      this.$store.dispatch('Category/get');
-    },
-    reloadSearchResult(cate) {
-      this.page = 1
-      this.$store.dispatch('Search/get', {page: 1, searchText: this.searchText, category: cate}).then(response => {
-              this.searchItemsV2 = response.data.content;
-              this.totalElementsV2 = response.data.totalElements;
-            });
+      }
     },
   }
 }
 </script>
 
 <style scoped>
+.fa-book-open:before {
+    content: "\f518";
+    font-size: 33px;
+}
+.btn-search{
+   background: #c6ccd4;;
+   border: 1px solid #767676;
+   width: 50px;
+   margin-left: 3px;
+}
+.btn-search:hover{
+   background: #44d064;
+   border: 1px solid #767676;
+   width: 50px;
+   margin-left: 3px;
+}
+.cate-drop{
+  background: white;
+  border: 1px solid transparent;
+}
+.search-bar{
+  margin: 30px auto;
+  justify-content: center;
+}
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
