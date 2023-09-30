@@ -29,7 +29,7 @@ const routes = [
     },
     {
         name: 'ViewPdf',
-        path: '/books/read/:id',
+        path: '/books/read/:id/:startPage/:index',
         component: () =>
             import ("../components/pages/books/ViewPdf.vue")
     },

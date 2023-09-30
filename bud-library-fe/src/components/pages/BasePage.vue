@@ -2,7 +2,7 @@
   <div class="d-none">  {{loadScript}} </div>
   <div class="base-page">
     <div class="bg" :style="cssProps"></div>
-    <Header  style="position: relative; z-index: 1051;"></Header>
+    <Header  style="position: relative; z-index: 2;"></Header>
     <div class="main" style="position: relative; z-index: 1050;">
       <router-view class="main-content" style="padding: 80px 100px 0 100px !important;" :key="$route.fullPath"></router-view>
     </div>

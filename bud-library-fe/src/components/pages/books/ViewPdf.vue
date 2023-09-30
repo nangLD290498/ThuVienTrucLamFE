@@ -1,7 +1,7 @@
 <template>
     <section class="section" v-if="book" >
         <div class = "content">
-           <div class="col-12">
+           <div ref="col12" class="col-12">
                 <div class="card card-warning" style="max-width: 2200px; margin: auto;">
                   <div class="card-body px-0">
                     <div class="row text-center">
@@ -11,19 +11,19 @@
                       <div @mouseup="handlerFunction" class="col-5 pl-0">
                         <div class = "page-content">
                             <vue-pdf-embed
-                            style="box-shadow: rgb(136, 136, 136) 5px 0px 10px 0px;"
+                            style="box-shadow: rgb(136, 136, 136) 5px 5px 5px 5px;"
                             @click="selectOnPage('LEFT')"
-                            ref="pdfRef"
                             :source="pdfSource"
                             :page="pageLeft"
                             @rendered="handleDocumentRender"
+                            @password-requested="handlePasswordRequest"
                         />
                         </div>
                       </div>
                       <div @mouseup="handlerFunction" class="col-5 mx-0 pr-0">
-                        <div class = "page-content">
+                        <div class = "page-content" v-dragscroll='true'>
                             <vue-pdf-embed
-                                style="box-shadow: rgb(136, 136, 136) 5px 10px 10px -10px;"
+                                style="box-shadow: rgb(136, 136, 136) 5px 5px 5px 5px;"
                                 @click="selectOnPage('RIGHT')"
                                 ref="pdfRef"
                                 :source="pdfSource"
@@ -104,17 +104,33 @@
             </div>
         </div>
     </section>
-    <div class="app-header">
-        <template v-if="isLoading">
+    <div class="app-header" v-if="book">
+        <template v-if="!isDoneLoading">
         Loading...
         </template>
 
         <template v-else>
         <span class="page-setting">
+            <ul id="menu" >
+                <li class="parent"><a href="#">{{ currentTableContent }}</a><span class="expand">»</span>
+                   <NestedDropdown @changePageToHeader="changePageToHeader" :contentTables="book.tableContents" />
+                </li>
+            </ul>
+            &nbsp;&nbsp;
             <input @keyup.enter="handlePageChange()" ref="selectPageInput" type="number" min="1" :max="pageCount" :value="pageLeft"  @focusout="handlePageChange()"/>
             &nbsp;Trang {{ pageLeft }} - {{ pageRight }} / {{ pageCount }}
         </span>
-        <router-link :to="{name: 'books.read', params: { id: $route.params.id }}">
+        &nbsp;&nbsp;
+        <span class="zoom">
+            <i @click="zoomOut" ref="zout" class="fa fa-search-minus" style="font-size:15px;color:white;cursor: pointer;"></i>
+            &nbsp;
+            <i @click="zoomIn" ref="zin" class="fa fa-search-plus" style="font-size:15px;color:white;cursor: pointer;"></i>
+        </span>
+
+        <router-link v-if="$route.params.index == 1" :to="{name: 'books.read', params: { id: $route.params.id }}">
+            <span class="close-sign">X</span>
+        </router-link>
+        <router-link v-if="$route.params.index == 2" to="/">
             <span class="close-sign">X</span>
         </router-link>
         </template>
@@ -124,6 +140,7 @@
 <script>
 import TreeNodeDisplay from "@/components/commons/TreeNodeDisplay.vue";
 import Loader from "@/components/commons/Loader.vue";
+import NestedDropdown from "@/components/commons/NestedDropdown.vue";
 import VuePdfEmbed from 'vue-pdf-embed'
 import config from '../../../config/index.js';
 
@@ -133,9 +150,11 @@ export default {
         TreeNodeDisplay,
         VuePdfEmbed,
         Loader,
+        NestedDropdown,
     },
     data() {
         return {
+            zoomIndex: 1,
             pdfSource: null,
             pageLeft: 1,
             pageRight: 2,
@@ -153,13 +172,15 @@ export default {
             isDoneLoading2: false,
             pageCount:0,
             isLastPage: false,
+            currentTableContent: '',
         }
     },
     created() {
       if (this.$route.params.id) {
         this.$store.dispatch('Book/findById', this.$route.params.id)
             .then(response => {
-              let respBook = response.data.content;
+              let respBook = response.data.content.book;
+              this.pageCount = response.data.content.pageCount
               this.book = respBook;
               this.book.tableContents = respBook.tableContent;
               this.pdfSource = this.config.VUE_APP_BASE_URL + `/books/${this.$route.params.id}/pdf`;
@@ -173,10 +194,64 @@ export default {
     computed: {
     },
     mounted() {
-        // this.$refs.content.addEventListener('mouseup', this.handlerFunction, false);
-        // this.selectedPage = this.pageLeft
+        try {
+            let initPage = parseInt(this.$route.params.startPage)
+             console.log("initPage", initPage, this.pageCount)
+            if(initPage % 2 == 1){
+                this.isDoneLoading2 = false
+                this.pageLeft = initPage;
+                this.pageRight = initPage + 1;
+            } else {
+                this.initPage = false
+                this.pageRight = initPage;
+                this.pageLeft = initPage - 1;
+            }
+        } catch (exceptionVar) {
+            this.$notify({type: 'error', text: 'Trang không hợp lệ !'});
+        }
+        
     },
     methods: {
+        zoomOut(){
+            let col12 = this.$refs.col12;
+            if(this.zoomIndex >= 0.5){
+                this.zoomIndex = this.zoomIndex - 0.1
+                console.log("zoomOut ", this.zoomIndex)
+                col12.style.zoom = this.zoomIndex
+                let zin = this.$refs.zin;
+                zin.style.color = "white";
+            } else {
+                let zout = this.$refs.zout;
+                zout.style.color = "grey";
+            }
+            
+        },
+        zoomIn(){
+            let col12 = this.$refs.col12;
+            if(this.zoomIndex <= 1.5){
+                this.zoomIndex = this.zoomIndex + 0.1
+                console.log("zoomIn ", this.zoomIndex)
+                col12.style.zoom = this.zoomIndex
+                let zout = this.$refs.zout;
+                zout.style.color = "white";
+            } else {
+                let zin = this.$refs.zin;
+                zin.style.color = "grey";
+            }
+        },
+        changePageToHeader(page){
+            console.log("code herre ", page)
+            if(page % 2 == 1){
+                this.isDoneLoading2 = false
+                this.pageLeft = page;
+                this.pageRight = page + 1;
+            } else {
+                this.isDoneLoading2 = false
+                this.pageRight = page;
+                this.pageLeft = page - 1;
+            }
+            this.$notify({type: 'success', text: 'Chuyển mục lục thành công'});
+        },
         handlePageChange(){
             let selectedPage = parseInt(this.$refs.selectPageInput.value)
             if(isNaN(selectedPage) || selectedPage == undefined || selectedPage == null 
@@ -315,22 +390,107 @@ export default {
         selectOnPage(pagePosition) {
             this.pagePosition = pagePosition;
         },
+       handlePasswordRequest(callback, retry) {
+        callback(prompt(retry
+            ? 'Enter password again'
+            : 'Enter password'
+        ))
+        },
          handleDocumentRender() {
             this.isDoneLoading = true
             this.isDoneLoading2 = true
-            if(this.pageCount == 0){
-                this.pageCount = this.$refs.pdfRef.pageCount
-            }
-            if(this.pageRight == this.$refs.pdfRef.pageCount){
+            if(this.pageRight == this.pageCount){
                  this.isLastPage = true
             }
-            console.log('handleDocumentRender isLoading', this.isDoneLoading);
+            let gap = 1000
+            this.tableContentsArr.forEach(tableContentEle => {
+                    if(tableContentEle.fromPage <= this.pageRight && this.pageRight <= tableContentEle.toPage){
+                        if((tableContentEle.toPage - tableContentEle.fromPage) <= gap){
+                            gap = tableContentEle.toPage - tableContentEle.fromPage
+                            this.currentTableContent = tableContentEle.headerContent
+                        }
+                    }
+                })
         },
+    
     }
 }
 </script>
 
 <style scoped>
+.zoom{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.page-content{
+    position: relative;
+    top: 44px;
+}
+.parent {
+	display: block;
+	position: relative;
+	float: left;
+	line-height: 21px;
+	background-color: transparent;
+	border-right: #CCC 1px solid;
+}
+
+.parent a {
+	margin: 10px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+.parent:hover>ul {
+	display: block;
+	position: absolute;
+}
+
+.child {
+	display: none;
+}
+
+.child li {
+	background-color: #E4EFF7;
+	line-height: 30px;
+	border-bottom: #CCC 1px solid;
+	border-right: #CCC 1px solid;
+	width: 100%;
+}
+
+.child li a {
+	color: #000000;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0px;
+	min-width: 10em;
+}
+
+ul ul ul {
+	left: 100%;
+	top: 0;
+	margin-left: 1px;
+}
+
+li:hover {
+	background-color: #95B4CA;
+}
+
+.parent li:hover {
+	background-color: #F0F0F0;
+}
+
+.expand {
+	font-size: 12px;
+	float: right;
+	margin-right: 5px;
+}
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -357,7 +517,11 @@ html{
     position: relative;
 }
 .content{
+    zoom: 1.01;
     height: 100vh;
+    display: grid;
+    align-items: center;
+    justify-content: center;
 }
 .loader-background{
     background-color: rgb(231, 231, 231);
@@ -366,15 +530,18 @@ html{
     height: 100vh;
     /* display:none; */
     margin-top: 1px;
+    z-index: 1000;
 }
 .col-12{
-    width: 1030px;
+    width: 975px;
     margin: 0;
-    position: absolute;
+    position: relative;
+    /* position: absolute;
     top: 50%;
     left: 50%;
     -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
+    margin: 0 auto;
 }
 .done-loading{
     display:none;
@@ -459,7 +626,7 @@ html{
     box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
     background-color: #555;
     color: #ddd;
-    bottom: 0px;
+    top: 0px;
     position: fixed;
     width: 100%;
     height: 5px;

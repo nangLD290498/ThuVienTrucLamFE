@@ -1,7 +1,11 @@
 <template>
   <div :style="nodeMargin" class="mt-1">
     <div class="d-flex">
-      <div class="table-content-item" :style="contentItem"> {{node.headerContent}} </div>
+      <div class="table-content-item" :style="contentItem"> 
+        <router-link :to="{ name: 'ViewPdf' , params: { id: id, startPage: node.fromPage, index: 1 }}" >
+          {{node.headerContent}} 
+        </router-link>
+      </div>
       <span class="font-weight-bold" style="width: 100px; padding: 3px 0 0 10px;"> {{node.fromPage}} <label v-if="node.toPage != null && node.toPage != ''">-</label> {{node.toPage}} </span>
     </div>
 
@@ -61,3 +65,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ .d-flex{
+  cursor: pointer;
+ }
+</style>

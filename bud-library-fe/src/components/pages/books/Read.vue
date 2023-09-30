@@ -4,7 +4,7 @@
             <div class="main-color font-weight-bold" style="font-size: 20px; padding-left: 18px;">
                 <span>{{ book.name }}</span>
                 <div class="float-right">
-                    <router-link :to="{ name: 'ViewPdf' }" class="btn btn-success">Đọc sách</router-link>
+                    <router-link :to="{ name: 'ViewPdf' , params: { id: id, startPage: 1, index: 1 }}" class="btn btn-success">Đọc sách</router-link>
                 </div>
             </div>
             <div class="row m-1">
@@ -64,14 +64,15 @@ export default {
             selectedStringMenu: '',
             selectedStringMenuParents: [],
             pagePosition: '',
-            config: config
+            config: config,
+            id: this.$route.params.id
         }
     },
     created() {
       if (this.$route.params.id) {
         this.$store.dispatch('Book/findById', this.$route.params.id)
             .then(response => {
-              let respBook = response.data.content;
+              let respBook = response.data.content.book;
               this.book = respBook;
               this.book.tableContents = respBook.tableContent;
               let tableContents = this.book.tableContents;

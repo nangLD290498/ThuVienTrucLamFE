@@ -140,7 +140,7 @@ export default {
     this.getData();
     if (this.$route.params.id) {
       this.$store.dispatch('Book/findById', this.$route.params.id)
-          .then(response => this.book = response.data);
+          .then(response => this.book = response.data.content.book);
 
       this.mode = CONSTANT.UPDATE;
     }
