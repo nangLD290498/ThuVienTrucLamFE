@@ -59,31 +59,42 @@
           </nav>
     </div>
    
-      <div v-if="modalShow"  class="custome-modal"
+      <div v-if="modalShow" ref="modal1"  class="custome-modal"
               tabindex="-1"
-              id="fire-modal-confirm"
+              
               aria-modal="true"
               role="dialog">
               <div class=" modal-md modal-dialog-centered" role="document">
                   <div class="modal-content bg-copy-x">
-                      <div class="modal-header pt-3" style="border-bottom: solid 1px #dbdbdb;">
+                      <div class="modal-header mh pt-3" style="border-bottom: solid 1px #dbdbdb;">
                           <h5 class="modal-title">Chi tiết</h5>
                       </div>
-                      <div class="modal-body" style="border-bottom: solid 1px #dbdbdb;">
+                      <div class="modal-body mb" style="border-bottom: solid 1px #dbdbdb;">
+                        <div :style="'background: rgb(253 147 0); z-index: 1111111; position: fixed; top: '+posY+'px; left: '+posX+'px;'" v-if="hasSelectedString">
+                          <div class="speech-bubble">
+                              <div class="share-inside">
+                                  <a href="javascript:void(0);" @click="showPopup()">
+                                      <b>Chi tiết</b>
+                                  </a>
+                              </div>
+                          </div>
+                      </div>
                         <div class="col-12">
                           <div class="sutra__header">
                             <div class="sutra-head__book-cover"><img class="img-fluid" src="https://api.phapbao.org/uploads/tu-tuong-phat-giao-an-do.JPG"></div>
                             <div class="sutra-head-detail">
-                              <h1 class="sutra-name">Tư Tưởng Phật Giáo Ấn Độ</h1>
-                              <div class="sutra-author ng-star-inserted"><a href="javascript:void(0);"> (Tác giả: Hạnh Viên - Xuất bản 2011) </a></div>
+                              <h1 class="sutra-name">{{ bookCurrent.book_name }}</h1>
+                              <div class="sutra-author ng-star-inserted"><a href="javascript:void(0);"> (Tác giả: {{bookCurrent.author}} - Xuất bản {{bookCurrent.published_year}}) </a></div>
                             </div>
                           </div>
                           <hr class="my-2">
                           <form class="pagedetail-form form-inline ng-untouched ng-pristine ng-valid">
                             <div class="pagedetail-form__flex-group group-1">
-                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted"><i class="fas fa-binoculars mr-1"></i> Kết quả sau </button>
+                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
+                                <i class="fas fa-binoculars mr-1"></i> Kết quả sau </button>
                                &nbsp;
-                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted"><i class="fas fa-binoculars mr-1"></i> Kết quả trước </button>
+                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
+                                <i class="fas fa-binoculars mr-1"></i> Kết quả trước </button>
                             </div>
                              <span class="zoom">
                                 <i @click="zoomOut" ref="zout" class="fa fa-search-minus" style="font-size:22px;color:rgb(108 117 125);cursor: pointer;"></i>
@@ -97,10 +108,10 @@
                           </small>
                           <hr class="my-2">
                           <div class="page-content">
-                            <div class="content" ref="pdfContent">
+                            <div class="content" ref="pdfContent" @mouseup="handlerFunction">
                               <vue-pdf-embed
                                   :source="pdfSource"
-                                  :page="page"
+                                  :page="bookCurrent.page_no"
                                   @rendered="handleDocumentRender"
                               />
                             </div>
@@ -110,8 +121,8 @@
                           </div>
                         </div>
                       </div>
-                      <div class="modal-footer" style="padding: 10px 10px 10px 0px;">
-                          <router-link :to="{ name: 'ViewPdf' , params: { id: book.id, startPage: book.page_no , index: 2 }}" target="_blank" class="btn btn-primary">
+                      <div class="modal-footer mf" style="padding: 10px 10px 10px 0px;">
+                          <router-link :to="{ name: 'ViewPdf' , params: { id: bookCurrent.id, startPage: bookCurrent.page_no , index: 2 }}" target="_blank" class="btn btn-primary">
                               Xem toàn bộ
                           </router-link>
                           <button type="button" class="btn btn-primary" @click="close">
@@ -120,8 +131,64 @@
                       </div>
                   </div>
               </div>
-          </div>
+      </div>
+      
+        <button class="d-none btn btn-primary btn-info mx-2 trigger--fire-modal-confirm" data-toggle="modal" data-target="#fire-modal-confirm" id="fire-modal" >Delete all</button>
+        <div v-if="book && modalShow2" ref="reference" class="custome-modal-2"
+             tabindex="-1"
+             id="fire-modal-confirm"
+             aria-modal="true"
+             role="dialog">
+            <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                <div class="modal-content bg-copy-x">
+                    <div class="modal-header pt-3" style="border-bottom: solid 1px #dbdbdb;">
+                        <h5 class="modal-title">Trích dẫn</h5>
+                    </div>
+                    <div class="modal-body" style="border-bottom: solid 1px #dbdbdb;">
+                        <span class="main-color"> "{{ this.selectedString }}" </span>
+                        <hr>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Tác giả/Dịch giả</div>
+                            <div class="col-8 main-color"> {{ book.author }} </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Tên sách</div>
+                            <div class="col-8 main-color">{{ book.name }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Mục lục</div>
+                            <div class="col-8">
+                                <template v-for="selectedStringMenuParent in selectedStringMenuParents" :key="selectedStringMenuParent">
+                                    <span class="main-color"> {{ selectedStringMenuParent }}</span> <br>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Nhà xuất bản</div>
+                            <div class="col-8 main-color"> {{ book.publisher }} </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Năm xuất bản</div>
+                            <div class="col-8 main-color"> {{ book.publishedYear }} </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 font-weight-bold">Trang</div>
+                            <div class="col-8 main-color"><span class="main-color"> {{bookCurrent.page_no}}</span></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="padding: 10px 10px 10px 0px;">
+                        <button type="button" @click="doExtractInfo()" ref="copyBtn" class="btn btn-primary copy-btn">
+                             Sao chép
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
      <div  v-if="modalShow" class="modal-cover">
+      
+    </div> 
+    <div  v-if="modalShow2" class="modal-cover-2" @click="modalShow2 = false">
+      
     </div> 
 </template>
 
@@ -129,18 +196,21 @@
 import { mapState } from 'vuex';
 import Paginate from 'vuejs-paginate-next';
 import CONSTANT from '../../config/constants';
-import VuePdfEmbed from 'vue-pdf-embed'
+import VuePdfEmbed from 'vue-pdf-embed';
+import config from '../../config/index';
 
 export default {
   components: {
      paginate: Paginate,
      VuePdfEmbed,
+     config: config,
   },
   data() {
     return {
       isDoneLoading: false,
       zoomIndex: 1,
       modalShow: false,
+      modalShow2: false,
       searchText: '',
       category: '*',
       searchItemsV2: [],
@@ -149,8 +219,15 @@ export default {
       page: CONSTANT.DEFAULT_PAGE,
       pageSize: CONSTANT.PAGE_SIZE,
       book: null,
+      bookCurrent: null,
       page:1,
       pdfSource: 'http://localhost:8088/books/1623/pdf',
+      hasSelectedString: false,
+      selectedString: '',
+      posX: 0,
+      posY: 0,
+      selectedStringMenuParents: [],
+      tableContentsArr: [],
     }
   },
   computed: {
@@ -160,9 +237,74 @@ export default {
     this.$store.dispatch('Category/get');
   },
   methods: {
+    getChilds(tableContent, parent, arrParents) {
+            if (typeof tableContent.parent === 'undefined') tableContent.parent = parent;
+
+            this.tableContentsArr.push({
+                headerContent: tableContent.headerContent,
+                fromPage: tableContent.fromPage,
+                toPage: tableContent.toPage,
+                parent: tableContent.parent,
+            })
+
+            if (tableContent.childs.length > 0) {
+                tableContent.childs.forEach(child => {
+                    this.getChilds(child, tableContent, arrParents);
+                })
+            }
+        },
+    getParents(node) {
+            if (node.parent != null) {
+                this.selectedStringMenuParents.push(node.parent.headerContent);
+
+                console.log(node.parent);
+
+                this.getParents(node.parent);
+            }
+        },
+    doExtractInfo(){
+            console.log("data", this.selectedStringMenuParents)
+            var tableContent = ''
+            for (let i = 0; i < this.selectedStringMenuParents.length; i++) {
+                tableContent += this.selectedStringMenuParents[i] + "/ ";
+            }
+
+            const message = '"' + this.selectedString +
+                '"\nTrang '+ this.bookCurrent.page_no +
+                " - Mục: " + tableContent.substring(0, tableContent.length - 2) +
+                " - Sách: "+ this.book.name + 
+                " - Tác giả: " + this.book.author + 
+                " - Xuất bản: " +  this.book.publisher + " (" + this.book.publishedYear + ")";
+            const storage = document.createElement('textarea');
+            storage.value = message;
+            this.$refs.reference.appendChild(storage);
+            storage.select();
+            storage.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            this.$refs.reference.removeChild(storage);
+            this.$refs.copyBtn.innerHTML = 'Đã sao chép';
+            this.$refs.copyBtn.style.backgroundColor = 'green'
+        },
+    // clickModal() {
+    //         this.$refs.copyBtn.innerHTML = 'Sao chép';
+    //         this.$refs.copyBtn.style.backgroundColor = '#6777ef'
+    //     },
+    showPopup() {
+            this.tableContentsArr.forEach(tableContentEle => {
+                console.log("trich dan: ", tableContentEle);
+                if (tableContentEle.fromPage <= this.bookCurrent.page_no && tableContentEle.toPage >= this.bookCurrent.page_no) {
+                    this.selectedStringMenuParents = [tableContentEle.headerContent];
+                    this.getParents(tableContentEle);
+                    console.log('set content table at ', tableContentEle);
+                }
+            })
+            $("#fire-modal").click();
+            this.modalShow2 = true
+        },
     close(){
       this.modalShow = false
       this.isDoneLoading = false
+      this.hasSelectedString = false
     },
     zoomOut(){
             let pdfContent = this.$refs.pdfContent;
@@ -193,7 +335,19 @@ export default {
         },
     viewDetails(item){
       this.modalShow = true
-      this.book = item
+      this.bookCurrent = item
+      this.pdfSource = config.VUE_APP_BASE_URL + `/books/${item.id}/pdf`;
+      console.log("base url: ", this.pdfSource)
+      this.$store.dispatch('Book/findById', item.id)
+            .then(response => {
+              let respBook = response.data.content.book;
+              this.book = respBook;
+              this.book.tableContents = respBook.tableContent;
+              let tableContents = this.book.tableContents;
+              tableContents.forEach(tableContent => {
+                this.getChilds(tableContent, null, []);
+              })
+            });
     },
     clickCallback() {
       this.reloadSearchResult(this.category, this.page);
@@ -213,7 +367,51 @@ export default {
      handleDocumentRender() {
             this.isDoneLoading = true
     },
-    
+    handlerFunction(event) {
+            console.log("length: ",window.getSelection().toString() , window.getSelection().toString().length, this.hasSelectedString)
+            if(window.getSelection().toString() != this.selectedString){
+              this.hasSelectedString = false
+            }
+            if(
+                window.getSelection().toString().length > 0
+                && this.hasSelectedString == true
+            ) {
+                return;
+            }
+            let pattern = /^[a-z0-9]$/i;
+            if(
+                window.getSelection().toString().length == 1
+                && !pattern.test(window.getSelection().toString())
+            ){
+                return;
+            }
+
+            this.hasSelectedString = false;
+
+            // Check if any text was selected
+            if(window.getSelection().toString().length > 0) {
+
+                this.hasSelectedString = true;
+
+                // Get selected text and encode it
+                const selection = encodeURIComponent(window.getSelection().toString()).replace(/[!'()*]/g, escape);
+                this.selectedString = window.getSelection().toString();
+
+                // Find out how much (if any) user has scrolled
+                var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+
+                // Get cursor position
+                // const posX = event.clientX - 20;
+                //  const posY = event.clientY - 20 ;
+                const posX = event.clientX - 40;
+                 const posY = event.clientY - 30;
+                 console.log("posX: ", event, window.pageYOffset)
+              
+
+                this.posX = posX;
+                this.posY = posY;
+            }
+        },
   }
 }
 </script>
@@ -262,7 +460,7 @@ small{
     -moz-column-gap: 1rem;
     column-gap: 1rem;
 }
-.modal-footer{
+.modal-footer {
     position: fixed;
     bottom: 0px;
     right: 0px;
@@ -270,7 +468,7 @@ small{
     background: white;
     height: 10%;
 }
-.modal-body{
+.modal-body {
     position: fixed;
     bottom: 10%;
     right: 0px;
@@ -303,6 +501,27 @@ small{
     width: 90%;
     height: 90%;
     z-index:10001;
+    top: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    /* overflow-y: scroll; */
+}
+.modal-cover-2{
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    z-index: 10002;
+    width: 100%;
+    height: 100%;
+    background: #525243;
+    opacity: .5;
+}
+.custome-modal-2{
+    position: fixed;
+    left: 50%;
+    width: 40%;
+    height: 90%;
+    z-index:10003;
     top: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -376,5 +595,67 @@ html{
 {
     opacity:0.05 !important;
     display: none;
+}
+.parent {
+	display: block;
+	position: relative;
+	float: left;
+	line-height: 21px;
+	background-color: transparent;
+	border-right: #CCC 1px solid;
+}
+
+.parent a {
+	margin: 10px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+.parent:hover>ul {
+	display: block;
+	position: absolute;
+}
+
+.child {
+	display: none;
+}
+
+.child li {
+	background-color: #E4EFF7;
+	line-height: 30px;
+	border-bottom: #CCC 1px solid;
+	border-right: #CCC 1px solid;
+	width: 100%;
+}
+
+.child li a {
+	color: #000000;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0px;
+	min-width: 10em;
+}
+
+ul ul ul {
+	left: 100%;
+	top: 0;
+	margin-left: 1px;
+}
+
+li:hover {
+	background-color: #95B4CA;
+}
+
+.parent li:hover {
+	background-color: #F0F0F0;
+}
+
+.expand {
+	font-size: 12px;
+	float: right;
+	margin-right: 5px;
 }
 </style>

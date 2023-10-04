@@ -312,6 +312,9 @@ export default {
         },
         handlerFunction(event) {
             console.log("length: ",window.getSelection().toString() , window.getSelection().toString().length, this.hasSelectedString)
+            if(window.getSelection().toString() != this.selectedString){
+              this.hasSelectedString = false
+            }
             if(
                 window.getSelection().toString().length > 0
                 && this.hasSelectedString == true
