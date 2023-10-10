@@ -33,8 +33,8 @@ const actions = {
         return new Promise((resolve, reject) => {
             apiGetList(filter)
                 .then(response => {
-                    commit("setDatas", response.data.data);
-                    commit("setPageCount", response.data.last_page);
+                    commit("setDatas", response.data.content);
+                    commit("setPageCount", response.data.totalPages);
                     resolve(response);
                 })
                 .catch(function(error) {

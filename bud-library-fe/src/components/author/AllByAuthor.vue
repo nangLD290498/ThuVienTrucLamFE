@@ -91,6 +91,11 @@ export default {
 </script>
 
 <style scoped>
+    .section{
+      margin-top: 80px;
+    margin-bottom: 80px;
+    padding: 0px 0px 0px !important;
+    }
     .all{
       margin-left: 43px;
       margin-bottom: 0;
@@ -126,18 +131,4 @@ export default {
       background-color: white;
       margin-bottom: 50px;
     }
-     /* .author_name{
-      margin-top: 23px;
-    }
-    .detail-header{
-      display: flex;
-      margin-bottom: 75px;
-      justify-content: center;
-    }
-    .author-text{
-      width: auto;
-    }
-    .avt{
-      width: 100px;
-    } */
 </style>

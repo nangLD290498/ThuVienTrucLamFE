@@ -83,6 +83,14 @@ export default {
 </script>
 
 <style scoped>
+    .main-content-2{
+      padding-top: 0px !important;
+    }
+    .section{
+      margin-top: 80px;
+      margin-bottom: 80px;
+      padding: 0px 0px 0px !important;
+    }
     .all{
       margin-left: 43px;
       margin-bottom: 0;

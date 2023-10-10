@@ -1,7 +1,7 @@
 import httpClient from './httpClient';
 import { serializeObjectToParams } from '../helpers';
 
-const END_POINT = '/publishers';
+const END_POINT = '/publisher';
 const CREATE_END_POINT = END_POINT + '/create';
 const UPDATE_END_POINT = END_POINT + '/update/';
 const DELETE_END_POINT = END_POINT + '/delete/';

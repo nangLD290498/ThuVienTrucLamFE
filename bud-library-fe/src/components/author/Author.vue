@@ -85,6 +85,9 @@ export default {
 <style scoped>
   .section {
     position: inherit;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    padding: 0px 100px 0px !important;
   }
   .pagination{
      display: inline-flex;

@@ -52,7 +52,7 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Tác giả</label>
-                    <input type="text" v-model='book.author' class="form-control"/>
+                    <AutoComplete :list="authors" @getTextContent="getAuthorContent"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -60,7 +60,8 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Nhà xuất bản</label>
-                    <input type="text" v-model='book.publisher' class="form-control"/>
+                    <!-- <input type="text" v-model='book.publisher' class="form-control"/> -->
+                    <AutoComplete :list="publishers" @getTextContent="getPublisherContent"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -109,6 +110,7 @@
 import CONSTANT, {dump_menus} from '../../../config/constants';
 import TreeNode from "@/components/commons/TreeNode.vue";
 import { mapState } from 'vuex';
+import AutoComplete from "@/components/commons/AutoComplete.vue";
 
 export default {
   data() {
@@ -131,10 +133,13 @@ export default {
       THUMB_FILE: null,
       category: '',
       isSaved: '',
+      authors: [],
+      publishers: [],
     };
   },
   components: {
     TreeNode,
+    AutoComplete
   },
   created() {
     this.getData();
@@ -144,11 +149,58 @@ export default {
 
       this.mode = CONSTANT.UPDATE;
     }
+    this.$store.dispatch('Author/get', {page: -1})
+      .then(response => {
+        this.authors = response.data.content
+        this.authors = this.authors.map(item => item.author)
+        });
+    this.$store.dispatch('Publisher/get', {page: -1})
+      .then(response => {
+        this.publishers = response.data.content
+        this.publishers = this.publishers.map(item => item.publisher)
+        });
   },
   computed: {
-    ...mapState('Category', ['categories'])
+    ...mapState('Category', ['categories']),
+    // searchAuthors: function() {
+    //   if (this.searchTerm === '') {
+    //     return this.authors
+    //   }
+
+    //   let matches = 0
+    //   console.log("nld ", this.authors)
+    //   return this.authors.filter(author => {
+    //       if (
+    //         author.toLowerCase().includes(this.searchTerm.toLowerCase())
+    //         && matches < 10
+    //       ) {
+    //         matches++
+    //         return author
+    //       }
+    //     })
+    //   }
   },
   methods: {
+    getPublisherContent(text){
+      console.log("publisher", text)
+      this.book.publisher = text
+    },
+    getAuthorContent(text){
+      console.log("author", text)
+      this.book.author = text
+    },
+    // authorForcusout(){
+    //    if(!this.isMouseOnAuthor) this.isShowAuthor = false
+    // },
+    // authorForcus(){
+    //   this.isShowAuthor=true
+    //   console.log("authorForcus", this.searchTerm, this.isShowAuthor, this.searchAuthors.length)
+    // },
+    // selectAuthor(author){
+    //   this.selectedAuthor = author
+    //   this.searchTerm = author
+    //   this.isShowAuthor = false
+    // },
     getData() {
       this.$store.dispatch('Category/get');
     },
@@ -237,3 +289,27 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.author-list{
+    position: absolute;
+    background: whitesmoke;
+    list-style-type: none;
+    padding-left: 0px;
+    overflow: scroll;
+    max-height: 400px;
+    z-index: 1000000;
+    right: 0px;
+    left:15px;
+}
+.author-list li{
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: .5px solid rgb(173, 172, 172);
+    border-left: .5px solid rgb(173, 172, 172);
+    border-right: .5px solid rgb(173, 172, 172);
+    cursor: pointer;
+} 
+
+</style>

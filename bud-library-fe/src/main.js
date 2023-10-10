@@ -5,6 +5,7 @@ import globalMixin from './mixins/index'
 import { router } from './router/index.js';
 import { store } from './store/index.js';
 import jQuery from 'jquery'
+import Dropdown from 'vue-simple-search-dropdown';
 window.jQuery = jQuery
 window.$ = jQuery;
 
@@ -17,6 +18,7 @@ let app = createApp(App)
 app.mixin(globalMixin);
 app.use(router)
 app.use(store)
+app.use(Dropdown);
 app.use(Notifications)
 app.mount('#app')
 
