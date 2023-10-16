@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item home">
-          <router-link to="/"  :class="'nav-link main-color ' + (isSelected1? 'selected' :  '')">Quản lý sách</router-link>
+          <router-link :to="{ name: 'admin.books'}"  :class="'nav-link main-color ' + (isSelected1? 'selected' :  '')">Quản lý sách</router-link>
         </li>
       </ul>
     </div>

@@ -81,6 +81,7 @@ export default {
               })
             });
       }
+      console.log("DATA: ", this.book)
     },
     methods: {
         getChilds(tableContent, parent, arrParents) {
@@ -114,6 +115,9 @@ export default {
 </script>
 
 <style scoped>
+.section-header{
+    margin-top: 80px;
+}
     .card-warning{
         padding: 31px;
     }

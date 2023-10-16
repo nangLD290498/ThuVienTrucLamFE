@@ -9,5 +9,10 @@ export default [
         path: '/admin/books/add',
         component: () => import('../components/admin/books/Add.vue')
     },
+    {
+        name: 'admin.books-update',
+        path: '/admin/books/update/:id/:cate',
+        component: () => import('../components/admin/books/Add.vue')
+    },
     
 ];

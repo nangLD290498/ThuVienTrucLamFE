@@ -38,7 +38,11 @@
                   </td>
                   <td>
                     <div class="btn-group" role="group">
-                      <!--                      <button class="btn btn-danger" @click="_delete(book)">Delete</button>-->
+                      <router-link :to="{name: 'admin.books-update', params: { id: book.id, cate: book.category.name }}">
+                        <i class="fas fa-edit" title="Chỉnh xửa sách"  style="font-size:15px;color:black; cursor: pointer;"></i>
+                      </router-link>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <i class="fas fa-trash-alt" @click="_delete(book)"  title="Xóa sách"  style="font-size:15px;color:red; cursor: pointer;"></i>
                     </div>
                   </td>
                 </tr>
@@ -98,6 +102,21 @@ export default {
     },
     clickCallback() {
       this.getData();
+    },
+    _delete(book) {
+      if (confirm("Bạn thực sự muốn xóa sách này !")) {
+        
+      } else {
+       
+      }
+      // let _this = this;
+      // this.$store.dispatch('Book/delete', book)
+      //     .then(() => {
+      //       this.$notify({type: 'success', text: 'Delete successfully!'});
+      //       this.getData();
+      //     }).catch(function (error) {
+      //   _this.$notify({type: 'error', text: 'Execute failed!'});
+      // });
     },
   }
 }

@@ -1,7 +1,8 @@
 <template>
-  <section class="section">
+  <section class="section" v-if="book">
     <div class="section-header ">
-      <div class="section-title mt-0">Thêm sách</div>
+      <div class="section-title mt-0" v-if="mode == 'create'">Thêm sách</div>
+      <div class="section-title mt-0" v-else>Chỉnh sửa sách</div>
       <!-- <div class="section-header-breadcrumb">
         <div class="breadcrumb-item"><a href="#">Quản lý sách</a></div>
         <div class="breadcrumb-item">Thêm sách</div>
@@ -15,7 +16,7 @@
             <div class="card-body">
               <div class="row">
 
-                <div class="col-12">
+                <div class="col-12" v-if="mode == 'create'">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">File PDF</label>
                     <input type="file" class="form-control" @change="onFileUploadPdf"/>
@@ -23,7 +24,7 @@
                   </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12" v-if="mode == 'create'">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Ảnh bìa</label>
                     <input type="file" class="form-control" @change="onFileUploadThumb"/>
@@ -52,7 +53,7 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Tác giả</label>
-                    <AutoComplete :list="authors" @getTextContent="getAuthorContent"/>
+                    <AutoComplete :Vmodel="book.author" :list="authors" @getTextContent="getAuthorContent"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -61,7 +62,7 @@
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label p-0 m-0">Nhà xuất bản</label>
                     <!-- <input type="text" v-model='book.publisher' class="form-control"/> -->
-                    <AutoComplete :list="publishers" @getTextContent="getPublisherContent"/>
+                    <AutoComplete :Vmodel="book.publisher" :list="publishers" @getTextContent="getPublisherContent"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -84,7 +85,7 @@
                     </div>
 
                     <TreeNode
-                        v-for="child in book.tableContents"
+                        v-for="child in book.tableContent"
                         :key="child.id"
                         :node="child"
                         :spacing="0"
@@ -115,12 +116,13 @@ import AutoComplete from "@/components/commons/AutoComplete.vue";
 export default {
   data() {
     return {
-      book: {
+      book: null,
+      bookDefalt: {
         name: '',
         author: '',
         publisher: '',
         publishedYear: 2015,
-        tableContents: [
+        tableContent: [
           {
             "headerContent" : "",
             "childs" : []
@@ -145,9 +147,14 @@ export default {
     this.getData();
     if (this.$route.params.id) {
       this.$store.dispatch('Book/findById', this.$route.params.id)
-          .then(response => this.book = response.data.content.book);
-
+          .then(response => {
+            let respBook = response.data.content.book;
+            this.book = respBook;
+          });
       this.mode = CONSTANT.UPDATE;
+      this.category = this.$route.params.cate
+    }else {
+      this.book = this.bookDefalt
     }
     this.$store.dispatch('Author/get', {page: -1})
       .then(response => {
@@ -162,23 +169,6 @@ export default {
   },
   computed: {
     ...mapState('Category', ['categories']),
-    // searchAuthors: function() {
-    //   if (this.searchTerm === '') {
-    //     return this.authors
-    //   }
-
-    //   let matches = 0
-    //   console.log("nld ", this.authors)
-    //   return this.authors.filter(author => {
-    //       if (
-    //         author.toLowerCase().includes(this.searchTerm.toLowerCase())
-    //         && matches < 10
-    //       ) {
-    //         matches++
-    //         return author
-    //       }
-    //     })
-    //   }
   },
   methods: {
     getPublisherContent(text){
@@ -189,18 +179,6 @@ export default {
       console.log("author", text)
       this.book.author = text
     },
-    // authorForcusout(){
-    //    if(!this.isMouseOnAuthor) this.isShowAuthor = false
-    // },
-    // authorForcus(){
-    //   this.isShowAuthor=true
-    //   console.log("authorForcus", this.searchTerm, this.isShowAuthor, this.searchAuthors.length)
-    // },
-    // selectAuthor(author){
-    //   this.selectedAuthor = author
-    //   this.searchTerm = author
-    //   this.isShowAuthor = false
-    // },
     getData() {
       this.$store.dispatch('Category/get');
     },
@@ -212,7 +190,7 @@ export default {
              this.category == null ||
              this.category.trim() === '' ||
              this.PDF_FILE == null ||
-             !this.isContenTableValid(this.book.tableContents[0])
+             !this.isContenTableValid(this.book.tableContent[0])
       ){
        _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
         return
@@ -231,10 +209,10 @@ export default {
           }
         };
 
-        let tableContents = this.book.tableContents;
+        let tableContents = this.book.tableContent;
 
         console.log('bookInfo', bookInfo);
-        console.log('tableContents', this.book.tableContents);
+        console.log('tableContents', this.book.tableContent);
 
         // upload file
         const formData = new FormData();
@@ -274,7 +252,8 @@ export default {
       this.THUMB_FILE = event.target.files[0]
     },
     addChild() {
-      this.book.tableContents.push({
+      console.log("Daata: ", this.book)
+      this.book.tableContent.push({
         "headerContent" : "",
         "childs" : []
       })

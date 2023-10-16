@@ -35,11 +35,18 @@ export default {
             type: Object,
             default: []
         },
+        Vmodel: {
+            type: Object,
+            default: ''
+        },
     },
     watch: {
         searchTerm: function() {
             this.$emit('getTextContent', this.searchTerm)
         }
+    },
+    created(){
+      this.searchTerm = this.Vmodel
     },
      computed: {
         searchAuthors: function() {
