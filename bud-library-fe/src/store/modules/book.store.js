@@ -10,6 +10,7 @@ import {
     apiGetLiquidationBooks,
     apiGetAvaiableLiquidationBooks,
     apiGetByBarcode,
+    apiDeleteTC,
 } from "@/api/book.api";
 
 const getDataFromLS = () => {
@@ -105,6 +106,17 @@ const actions = {
     delete({}, book) {
         return new Promise((resolve, reject) => {
             apiDelete(book)
+                .then(response => {
+                    resolve(response);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    },
+    deleteTC({}, book) {
+        return new Promise((resolve, reject) => {
+            apiDeleteTC(book)
                 .then(response => {
                     resolve(response);
                 })

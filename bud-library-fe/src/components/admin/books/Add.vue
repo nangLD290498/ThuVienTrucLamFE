@@ -35,9 +35,10 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1"  class="form-label p-0 m-0" >Thể loại</label>
-                    <select  class="form-control" v-model="category"  v-if="categories">
+                    <!-- <select  class="form-control" v-model="category"  v-if="categories">
                       <option v-for="cate in categories" :key="cate" :value="cate.name" >{{ cate.name }}</option>
-                    </select>
+                    </select> -->
+                    <AutoComplete :Vmodel="category" :list="categories.map(cate=>cate.name)" @getTextContent="getCateContent"/>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
                 </div>
@@ -94,7 +95,7 @@
                   </div>
 
                   <button type="submit" class="btn btn-primary" @click="excute()">
-                    {{ this.mode === CREATE ? 'Add' : 'Save' }}
+                    {{ mode === 'create' ? 'Thêm sách' : 'lưu thay đổi' }}
                   </button>
                 </div>
 
@@ -143,6 +144,9 @@ export default {
     TreeNode,
     AutoComplete
   },
+  beforeDestroy(){
+    
+  },
   created() {
     this.getData();
     if (this.$route.params.id) {
@@ -172,42 +176,72 @@ export default {
   },
   methods: {
     getPublisherContent(text){
-      console.log("publisher", text)
       this.book.publisher = text
     },
     getAuthorContent(text){
-      console.log("author", text)
       this.book.author = text
+    },
+    getCateContent(text){
+      this.category = text
     },
     getData() {
       this.$store.dispatch('Category/get');
     },
-    excute() {
+    async excute() {
       let _this = this;
-      if(this.book.name.trim() === '' ||
+      if((this.book.name.trim() === '' ||
              this.book.author.trim() === '' ||
              this.book.publisher.trim() === '' ||
              this.category == null ||
              this.category.trim() === '' ||
              this.PDF_FILE == null ||
-             !this.isContenTableValid(this.book.tableContent[0])
+             !this.isContenTableValid(this.book.tableContent[0])) &&
+             this.mode === 'create'
+      ){
+       _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
+        return
+      }
+
+      if((this.book.name.trim() === '' ||
+             this.book.author.trim() === '' ||
+             this.book.publisher.trim() === '' ||
+             this.category == null ||
+             this.category.trim() === '' ||
+             !this.isContenTableValid(this.book.tableContent[0])) &&
+             this.mode === 'update'
       ){
        _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
         return
       }
 
         try { 
-        let bookInfo = {
-          "name": this.book.name,
-          "author": this.book.author,
-          "publisher": this.book.publisher,
-          "publishedYear": this.book.publishedYear.toString(),
-          "remarks": "",
-          "category": {
-            "name": this.category,
-            "remarks": ""
-          }
-        };
+        let bookInfo = null
+        if(this.mode === 'create') {
+          bookInfo = {
+            "name": this.book.name,
+            "author": this.book.author,
+            "publisher": this.book.publisher,
+            "publishedYear": this.book.publishedYear.toString(),
+            "remarks": "",
+            "category": {
+              "name": this.category,
+              "remarks": ""
+            }
+          };
+        } else {
+           bookInfo = {
+            "id": this.book.id,
+            "name": this.book.name,
+            "author": this.book.author,
+            "publisher": this.book.publisher,
+            "publishedYear": this.book.publishedYear.toString(),
+            "remarks": "",
+            "category": {
+              "name": this.category,
+              "remarks": ""
+            }
+          };
+        }
 
         let tableContents = this.book.tableContent;
 
@@ -216,12 +250,14 @@ export default {
 
         // upload file
         const formData = new FormData();
-        formData.append('file', this.PDF_FILE, this.PDF_FILE.name);
-        formData.append('thumbnailPic', this.THUMB_FILE, this.THUMB_FILE.name);
+        if(this.mode === 'create'){
+          formData.append('file', this.PDF_FILE, this.PDF_FILE.name);
+          formData.append('thumbnailPic', this.THUMB_FILE, this.THUMB_FILE.name);
+        }
         formData.append('bookString', btoa(unescape(encodeURIComponent(JSON.stringify(bookInfo)))));
         formData.append('tableContent', btoa(unescape(encodeURIComponent(JSON.stringify(tableContents)))));
 
-        this.$store.dispatch('Book/' + this.mode, formData)
+        await this.$store.dispatch('Book/' + this.mode, formData)
         .then((response) => {
               this.status = response.data.status
               console.log("status: ", response.data.status)
@@ -229,7 +265,12 @@ export default {
                  _this.$notify({type: 'error', text: response.data.message});
                  return;
               }else{
-                _this.$notify({type: 'success', text: 'Thêm sách thành công!'});
+                if(this.mode === 'create'){
+                  _this.$notify({type: 'success', text: 'Thêm sách thành công!'});
+                } else {
+                  _this.$notify({type: 'success', text: 'Chỉnh sửa sách thành công!'});
+                }
+              
                 _this.$router.push({ name: "admin.books" })
               }
         }).catch(function (error) {
@@ -239,6 +280,7 @@ export default {
             _this.$notify({type: 'error', text: 'Hãy kiểm tra lại thông tin sách !'});
           }
         });
+        this.$store.dispatch('Book/deleteTC');
         }
       catch(err) {
         console.log("Error: ", err)

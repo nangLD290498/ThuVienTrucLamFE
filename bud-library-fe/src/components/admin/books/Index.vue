@@ -105,18 +105,18 @@ export default {
     },
     _delete(book) {
       if (confirm("Bạn thực sự muốn xóa sách này !")) {
-        
+        this.$store.dispatch('Book/delete', book)
+            .then(() => {
+              this.$notify({type: 'success', text: 'Xóa thành công !'});
+              this.getData();
+            }).catch(function (error) {
+          _this.$notify({type: 'error', text: 'Execute failed!'});
+        });
       } else {
        
       }
       // let _this = this;
-      // this.$store.dispatch('Book/delete', book)
-      //     .then(() => {
-      //       this.$notify({type: 'success', text: 'Delete successfully!'});
-      //       this.getData();
-      //     }).catch(function (error) {
-      //   _this.$notify({type: 'error', text: 'Execute failed!'});
-      // });
+      
     },
   }
 }
