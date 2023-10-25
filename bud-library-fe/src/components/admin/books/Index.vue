@@ -104,13 +104,24 @@ export default {
       this.getData();
     },
     _delete(book) {
+      let _this = this;
       if (confirm("Bạn thực sự muốn xóa sách này !")) {
-        this.$store.dispatch('Book/delete', book)
+        let token = localStorage.getItem('user')
+        console.log('delete ', book)
+        this.$store.dispatch('Book/delete', {id: book.id, token: token})
             .then(() => {
               this.$notify({type: 'success', text: 'Xóa thành công !'});
               this.getData();
-            }).catch(function (error) {
-          _this.$notify({type: 'error', text: 'Execute failed!'});
+            },
+             (error) => {
+              if (error.request.status === 401) {
+                alert("Bạn đã hết phiên đăng nhập, hãy đăng nhập lại để tiếp tục !");
+                  console.log('loggin out')
+                  localStorage.removeItem('user');
+                  localStorage.removeItem('username');
+                  this.$router.go('/login')
+                
+              }
         });
       } else {
        

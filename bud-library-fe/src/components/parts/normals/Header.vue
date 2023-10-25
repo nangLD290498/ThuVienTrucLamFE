@@ -21,11 +21,8 @@
         </li>
       </ul>
       <div class="form-inline my-2 my-lg-0">
-        <!-- <input class="form-control mr-sm-2" type="search" v-model="searchText" placeholder="Nhập nội dung tìm kiếm" aria-label="Search">
-        <router-link v-if="searchText" :to="{ name: 'search', params: { search: searchText}}">
-            <button class="btn btn-outline-success my-2 my-sm-0 main-color">Tìm kiếm</button>
-        </router-link>
-        <button v-else class="btn btn-outline-success my-2 my-sm-0 main-color">Tìm kiếm</button> -->
+        <span v-if="username" class="username"> Xin chào {{ username }} </span> 
+        &nbsp;&nbsp;&nbsp;
         <div class="dropdown" >
           <i class='fas fa-user-circle logout dropdown-toggle' style='font-size:30px' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
@@ -50,6 +47,7 @@ export default {
       isSelected2: false,
       isSelected3: false,
       isSelected4: false,
+      username: localStorage.getItem('username')
     }
   },
   computed: {

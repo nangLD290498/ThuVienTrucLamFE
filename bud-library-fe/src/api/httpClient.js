@@ -9,10 +9,11 @@ const httpClient = axios.create({
 
 // Get access-token of login-user.
 export const getAuthToken = () => {
-    let user = JSON.parse(localStorage.getItem('user'));
+    let user = localStorage.getItem('user')
 
-    if (user && user.token) {
-        return 'Bearer ' + user.token;
+    if (user) {
+        console.log('Bearer ' + user)
+        return 'Bearer ' + user;
     } else {
         return {};
     }

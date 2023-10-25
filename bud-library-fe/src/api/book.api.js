@@ -1,10 +1,11 @@
 import httpClient from './httpClient';
+import getAuthToken from './httpClient';
 import { serializeObjectToParams } from '../helpers';
 
 const END_POINT = '/books';
 const CREATE_END_POINT = '/pdf/saveBookFullFlow';
 const UPDATE_END_POINT = END_POINT + '/update';
-const DELETE_END_POINT = END_POINT + '/';
+const DELETE_END_POINT = END_POINT + '/delete/';
 const DELETE_TC_END_POINT = END_POINT + '/deleteTableContentNoBook';
 const TOP_BOOKS_END_POINT = '/top-books';
 const LIQUIDATION_BOOKS_END_POINT = '/liquidation-books';
@@ -15,10 +16,30 @@ const apiGetList = (filter) => httpClient.get(END_POINT + '?' + serializeObjectT
 const apiGetListByCate = (filter) => httpClient.get(END_POINT + '/ByCategory/' + filter.cateId+ '?page=' + filter.page);
 const apiGetListByAuthor = (filter) => httpClient.get(END_POINT + '/ByAuthor?author=' + filter.author+ '&page=' + filter.page);
 const apiGetById = (id) => httpClient.get(END_POINT + '/' + id);
-const apiPost = (record) => httpClient.post(END_POINT, record);
-const apiUpdate = (record) => httpClient.post(UPDATE_END_POINT, record);
-const apiDelete = (record) => httpClient.delete(DELETE_END_POINT + record.id);
-const apiDeleteTC = () => httpClient.delete(DELETE_TC_END_POINT);
+const apiPost = (record) => httpClient.post(END_POINT+ '/save', record.formData,
+  {
+    headers: {
+      Authorization: 'Bearer ' + record.token
+    }
+  });
+const apiUpdate = (record) => httpClient.post(UPDATE_END_POINT, record.formData,
+{
+  headers: {
+    Authorization: 'Bearer ' + record.token
+  }
+});
+const apiDelete = (record) => httpClient.delete(DELETE_END_POINT  + record.id,
+  {
+    headers: {
+      Authorization: 'Bearer ' + record.token
+    }
+  });
+const apiDeleteTC = (token) => httpClient.delete(DELETE_TC_END_POINT,
+  {
+    headers: {
+      Authorization: 'Bearer ' + token
+    }
+  });
 const apiGetTopBooks = () => httpClient.get(TOP_BOOKS_END_POINT);
 const apiGetLiquidationBooks = () => httpClient.get(LIQUIDATION_BOOKS_END_POINT);
 const apiGetAvaiableLiquidationBooks = () => httpClient.get(AVAIABLE_LIQUIDATION_BOOKS_END_POINT);

@@ -59,7 +59,7 @@
           </nav>
     </div>
    
-      <div v-if="modalShow" ref="modal1"  class="custome-modal"
+      <div @click="clearPopup" v-if="modalShow" ref="modal1"  class="custome-modal"
               tabindex="-1"
               
               aria-modal="true"
@@ -108,7 +108,7 @@
                           </small>
                           <hr class="my-2">
                           <div class="page-content">
-                            <div class="content" ref="pdfContent" @mouseup="handlerFunction">
+                            <div class="content" ref="pdfContent" @click.right="handlerFunction($event)" @click="clearPopup">
                               <vue-pdf-embed
                                   :source="pdfSource"
                                   :page="bookCurrent.page_no"
@@ -184,10 +184,10 @@
                 </div>
             </div>
         </div>
-     <div  v-if="modalShow" class="modal-cover">
+     <div  v-if="modalShow" class="modal-cover" @click="clearPopup">
       
     </div> 
-    <div  v-if="modalShow2" class="modal-cover-2" @click="modalShow2 = false">
+    <div  v-if="modalShow2" class="modal-cover-2"  @click="modalShow2 = false">
       
     </div> 
 </template>
@@ -289,6 +289,9 @@ export default {
     //         this.$refs.copyBtn.innerHTML = 'Sao chép';
     //         this.$refs.copyBtn.style.backgroundColor = '#6777ef'
     //     },
+    clearPopup(){
+            this.hasSelectedString = false
+        },
     showPopup() {
             this.tableContentsArr.forEach(tableContentEle => {
                 console.log("trich dan: ", tableContentEle);
@@ -368,6 +371,7 @@ export default {
             this.isDoneLoading = true
     },
     handlerFunction(event) {
+            event.preventDefault()
             console.log("length: ",window.getSelection().toString() , window.getSelection().toString().length, this.hasSelectedString)
             if(window.getSelection().toString() != this.selectedString){
               this.hasSelectedString = false

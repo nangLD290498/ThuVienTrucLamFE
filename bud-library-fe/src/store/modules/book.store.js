@@ -114,9 +114,9 @@ const actions = {
                 });
         });
     },
-    deleteTC({}, book) {
+    deleteTC({}, token) {
         return new Promise((resolve, reject) => {
-            apiDeleteTC(book)
+            apiDeleteTC(token)
                 .then(response => {
                     resolve(response);
                 })

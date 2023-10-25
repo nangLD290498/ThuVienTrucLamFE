@@ -12,6 +12,20 @@
         </li>
       </ul>
     </div>
+    <div class="form-inline my-2 my-lg-0">
+        <span class="username"> Xin chào {{ username }} </span> &nbsp;&nbsp;&nbsp;
+        <div class="dropdown" >
+          <i class='fas fa-user-circle logout dropdown-toggle' style='font-size:30px' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+            <div @click="logout"  class="dropdown-item">
+              Đăng xuất
+            </div>
+            <router-link  class="dropdown-item"  to="/register">
+              Đăng kí tài khoản
+            </router-link>
+          </div>
+        </div>
+      </div>
   </nav>
 </template>
 
@@ -23,6 +37,7 @@ export default {
     return {
       searchText: '',
       isSelected1: true,
+      username: localStorage.getItem('username')
     }
   },
   computed: {
@@ -30,11 +45,24 @@ export default {
   },
   watch: {},
   methods: {
+    logout(){
+      console.log('loggin out')
+      localStorage.removeItem('user');
+      localStorage.removeItem('username');
+      this.$router.go(this.$router.currentRoute)
+    }
   }
 }
 </script>
 
 <style scoped>
+.dropdown-item{
+    cursor: pointer;
+    padding: 10px 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 13px;
+}
 .logo{
   text-transform: uppercase;
   letter-spacing: 3px;

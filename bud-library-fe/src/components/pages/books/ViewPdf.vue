@@ -1,5 +1,5 @@
 <template>
-    <section class="section" v-if="book" >
+    <section class="section" v-if="book" @click="clearPopup">
         <div class = "content">
            <div ref="col12" class="col-12">
                 <div class="card card-warning" style="max-width: 2200px; margin: auto;">
@@ -8,7 +8,7 @@
                       <div class="col-1  px-0">
                           <a href="#" :class="'btn btn-icon btn-info ' + ((pageLeft == 1 || !isDoneLoading2 )? ' disabled' : '')"  style="margin: 0; position: absolute; top: 50%; -ms-transform: translateY(-50%); transform: translateY(-50%); transform: translateX(-50%); border-radius: 28px;" @click="prevPage()"><i class="fas fa-angle-left"></i></a>
                       </div>
-                      <div @mouseup="handlerFunction" class="col-5 pl-0">
+                      <div @click.right="handlerFunction($event)" @click="clearPopup" class="col-5 pl-0">
                         <div class = "page-content">
                             <vue-pdf-embed
                             style="box-shadow: rgb(136, 136, 136) 5px 5px 5px 5px;"
@@ -20,7 +20,7 @@
                         />
                         </div>
                       </div>
-                      <div @mouseup="handlerFunction" class="col-5 mx-0 pr-0">
+                      <div @click.right="handlerFunction($event)" @click="clearPopup" class="col-5 mx-0 pr-0">
                         <div class = "page-content" v-dragscroll='true'>
                             <vue-pdf-embed
                                 style="box-shadow: rgb(136, 136, 136) 5px 5px 5px 5px;"
@@ -310,7 +310,11 @@ export default {
             this.pageLeft += 2;
             this.pageRight += 2;
         },
+        clearPopup(){
+            this.hasSelectedString = false
+        },
         handlerFunction(event) {
+            event.preventDefault()
             console.log("length: ",window.getSelection().toString() , window.getSelection().toString().length, this.hasSelectedString)
             if(window.getSelection().toString() != this.selectedString){
               this.hasSelectedString = false
@@ -353,6 +357,7 @@ export default {
         },
         showPopup() {
             console.log(this.pageLeft);
+            this.selectedStringMenuParents = []
             this.tableContentsArr.forEach(tableContentEle => {
                 console.log(tableContentEle);
                 if (tableContentEle.fromPage <= this.pageLeft && tableContentEle.toPage >= this.pageLeft) {
@@ -361,6 +366,9 @@ export default {
                     console.log('set content table at ', tableContentEle);
                 }
             })
+            if(this.selectedStringMenuParents.length === 0){
+                this.selectedStringMenuParents.push('Không có mục lục')
+            }
             $("#fire-modal").click();
         },
         clickModal() {

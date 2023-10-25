@@ -2,9 +2,6 @@ import {
     login,
     register,
     logout,
-    apiGetProfile,
-    apiPostLoginWithFacebook,
-    apiPostLoginWithGoogle
 } from "@/api/auth.api";
 
 const getUser = () => {
@@ -22,88 +19,30 @@ const user = getUser();
 const state = user ? { user: user } : { user: null };
 
 const actions = {
-    login({ commit }, { email, password }) {
-        commit("loginRequest", { email });
+    login({ commit }, { username, password }) {
+        commit("loginRequest", { username });
 
         return new Promise((resolve, reject) => {
-            login({ email, password })
+            login({ username, password })
                 .then(response => {
-                    commit("loginSuccess", response.data.user);
+                    commit("loginSuccess", response.data);
                     // login thành công nếu có một token jwt trong response
-                    if (response.data.user) {
+                    if (response.data) {
                         // lưu dữ liệu user và token jwt vào local storage để giữ user được log in trong page
                         localStorage.setItem(
                             "user",
-                            JSON.stringify(response.data.user)
+                            response.data.accessToken
+                        );
+                        localStorage.setItem(
+                            "username",
+                            response.data.username
                         );
                     }
-                    resolve(response.data.user);
+                    resolve(response.data);
                 })
                 .catch(function(error) {
                     if (error.response) {
                         commit("loginFailure", error);
-                        reject(error.response.data);
-                    }
-                });
-        });
-    },
-    loginWithFacebook({ commit }, accessToken) {
-        return new Promise((resolve, reject) => {
-            apiPostLoginWithFacebook(accessToken)
-                .then(response => {
-                    commit("loginSuccess", response.data.success.user);
-                    // login thành công nếu có một token jwt trong response
-                    if (response.data.success.user) {
-                        // lưu dữ liệu user và token jwt vào local storage để giữ user được log in trong page
-                        localStorage.setItem(
-                            "user",
-                            JSON.stringify(response.data.success.user)
-                        );
-                    }
-                    resolve(response.data.success.user);
-                })
-                .catch(function(error) {
-                    if (error.response) {
-                        commit("loginFailure", error);
-                        reject(error.response.data);
-                    }
-                });
-        });
-    },
-    loginWithGoogle({ commit }, id_token) {
-        return new Promise((resolve, reject) => {
-            apiPostLoginWithGoogle(id_token)
-                .then(response => {
-                    commit("loginSuccess", response.data.success.user);
-                    // login thành công nếu có một token jwt trong response
-                    if (response.data.success.user) {
-                        // lưu dữ liệu user và token jwt vào local storage để giữ user được log in trong page
-                        localStorage.setItem(
-                            "user",
-                            JSON.stringify(response.data.success.user)
-                        );
-                    }
-                    resolve(response.data.success.user);
-                })
-                .catch(function(error) {
-                    if (error.response) {
-                        commit("loginFailure", error);
-                        reject(error.response.data);
-                    }
-                });
-        });
-    },
-    logout({ commit }) {
-        console.log("logout")
-        return new Promise((resolve, reject) => {
-            logout()
-                .then(response => {
-                    commit("logout");
-                    localStorage.removeItem("user");
-                    resolve(response);
-                })
-                .catch(function(error) {
-                    if (error.response) {
                         reject(error.response.data);
                     }
                 });

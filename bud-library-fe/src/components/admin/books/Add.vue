@@ -189,6 +189,7 @@ export default {
     },
     async excute() {
       let _this = this;
+      let token = localStorage.getItem('user')
       if((this.book.name.trim() === '' ||
              this.book.author.trim() === '' ||
              this.book.publisher.trim() === '' ||
@@ -256,8 +257,7 @@ export default {
         }
         formData.append('bookString', btoa(unescape(encodeURIComponent(JSON.stringify(bookInfo)))));
         formData.append('tableContent', btoa(unescape(encodeURIComponent(JSON.stringify(tableContents)))));
-
-        await this.$store.dispatch('Book/' + this.mode, formData)
+        await this.$store.dispatch('Book/' + this.mode, {token: token, formData: formData})
         .then((response) => {
               this.status = response.data.status
               console.log("status: ", response.data.status)
@@ -273,14 +273,23 @@ export default {
               
                 _this.$router.push({ name: "admin.books" })
               }
-        }).catch(function (error) {
-          if (error.response && error.response.data.error) {
-            _this.error = error.response.data.error;
-          } else {
-            _this.$notify({type: 'error', text: 'Hãy kiểm tra lại thông tin sách !'});
+        },
+        (error) => {
+          if (error.request.status === 401) {
+                  alert("Bạn đã hết phiên đăng nhập, hãy đăng nhập lại để tiếp tục !");
+                  console.log('loggin out')
+                  localStorage.removeItem('user');
+                  localStorage.removeItem('username');
+                  _this.$router.go('/login')
+          } else{
+              if (error.response && error.response.data.error) {
+                _this.error = error.response.data.error;
+              } else {
+                _this.$notify({type: 'error', text: 'Hãy kiểm tra lại thông tin sách !'});
+              } 
           }
         });
-        this.$store.dispatch('Book/deleteTC');
+        this.$store.dispatch('Book/deleteTC', token);
         }
       catch(err) {
         console.log("Error: ", err)
