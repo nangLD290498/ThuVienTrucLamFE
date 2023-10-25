@@ -281,6 +281,7 @@ export default {
                   localStorage.removeItem('user');
                   localStorage.removeItem('username');
                   _this.$router.go('/login')
+                  return
           } else{
               if (error.response && error.response.data.error) {
                 _this.error = error.response.data.error;
@@ -289,7 +290,7 @@ export default {
               } 
           }
         });
-        this.$store.dispatch('Book/deleteTC', token);
+        this.$store.dispatch('Book/deleteTC', token) .then((response) => {}, (error) => {})
         }
       catch(err) {
         console.log("Error: ", err)
