@@ -69,8 +69,8 @@
                       <div class="modal-header mh pt-3" style="border-bottom: solid 1px #dbdbdb;">
                           <h5 class="modal-title">Chi tiết</h5>
                       </div>
-                      <div class="modal-body mb" style="border-bottom: solid 1px #dbdbdb;">
-                        <div :style="'background: rgb(253 147 0); z-index: 1111111; position: fixed; top: '+posY+'px; left: '+posX+'px;'" v-if="hasSelectedString">
+                      <div ref="searchContent" class="modal-body mb" style="border-bottom: solid 1px #dbdbdb;">
+                        <div :style="'background: rgb(253 147 0); z-index: 1111111; position: absolute; top: '+posY+'px; left: '+posX+'px;'" v-if="hasSelectedString">
                           <div class="speech-bubble">
                               <div class="share-inside">
                                   <a href="javascript:void(0);" @click="showPopup()">
@@ -400,16 +400,9 @@ export default {
                 // Get selected text and encode it
                 const selection = encodeURIComponent(window.getSelection().toString()).replace(/[!'()*]/g, escape);
                 this.selectedString = window.getSelection().toString();
-
-                // Find out how much (if any) user has scrolled
-                var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-
                 // Get cursor position
-                // const posX = event.clientX - 20;
-                //  const posY = event.clientY - 20 ;
-                const posX = event.clientX - 40;
-                 const posY = event.clientY - 30;
-                 console.log("posX: ", event, window.pageYOffset)
+                const posX = event.clientX - 100;
+                const posY = event.clientY + this.$refs.searchContent.scrollTop - 70;
               
 
                 this.posX = posX;
@@ -661,5 +654,39 @@ li:hover {
 	font-size: 12px;
 	float: right;
 	margin-right: 5px;
+}
+.speech-bubble {
+    position: relative;
+    background: #ffffff;
+    border-radius: .4em;
+    color: white;
+}
+.speech-bubble:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border: 12px solid transparent;
+    border-bottom-color: #ffffff;
+    border-top: 0;
+    margin-left: -12px;
+    margin-top: -12px;
+}
+.share-inside {
+    background: url('https://awik.io/demo/js-selected-text/twicon.png');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 24px 19px;
+}
+
+.share-inside a {
+    display: inline-block;
+    text-decoration: none;
+    color: #ef5a00;
+    font-size: 14px;
+    padding: 5px 10px 5px 10px;
+    padding-left: 40px;
 }
 </style>

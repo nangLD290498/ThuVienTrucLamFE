@@ -111,11 +111,14 @@
 
         <template v-else>
         <span class="page-setting">
-            <ul id="menu" >
-                <li class="parent"><a href="#">{{ currentTableContent }}</a><span class="expand">»</span>
-                   <NestedDropdown @changePageToHeader="changePageToHeader" :contentTables="book.tableContents" />
-                </li>
-            </ul>
+            <div>
+                <ul id="menu" >
+                    <li class="parent" >
+                        <div class="menu-display"><span>{{ currentTableContent }}</span></div>
+                        <NestedDropdown @changePageToHeader="changePageToHeader" :contentTables="book.tableContents" />
+                    </li>
+                </ul>
+            </div>
             &nbsp;&nbsp;
             <input @keyup.enter="handlePageChange()" ref="selectPageInput" type="number" min="1" :max="pageCount" :value="pageLeft"  @focusout="handlePageChange()"/>
             &nbsp;Trang {{ pageLeft }} - {{ pageRight }} / {{ pageCount }}
@@ -497,6 +500,10 @@ li:hover {
 	background-color: #F0F0F0;
 }
 
+.parent li {
+	background-color: #F0F0F0;
+}
+
 .expand {
 	font-size: 12px;
 	float: right;
@@ -642,5 +649,19 @@ html{
     width: 100%;
     height: 5px;
     /* opacity: 0.5; */
+}
+.page-setting #menu{
+    width: 350px;
+}
+
+.page-setting #menu .parent{
+    background: #F0F0F0;
+    color: rgb(75, 74, 74);
+    font-weight: 400;
+}
+.menu-display{
+    cursor: pointer;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 </style>
