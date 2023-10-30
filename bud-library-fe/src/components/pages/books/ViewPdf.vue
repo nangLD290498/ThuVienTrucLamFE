@@ -111,11 +111,11 @@
 
         <template v-else>
         <span class="page-setting">
-            <div>
+            <div @click="displaySideBar">
                 <ul id="menu" >
                     <li class="parent" >
                         <div class="menu-display"><span>{{ currentTableContent }}</span></div>
-                        <NestedDropdown @changePageToHeader="changePageToHeader" :contentTables="book.tableContents" />
+                        <!-- <NestedDropdown @changePageToHeader="changePageToHeader" :contentTables="book.tableContents" /> -->
                     </li>
                 </ul>
             </div>
@@ -138,10 +138,24 @@
         </router-link>
         </template>
     </div>
+    <div class="side-bar" v-if="book && showSideBar">
+        <span class="side-bar-x" @click="clearSideBar">X</span>
+        <div class='side-bar-content' :key="currentTableContentArray">
+            <TreeNodeforReadPage
+                            v-for="child in book.tableContents"
+                            :key="child.id"
+                            :node="child"
+                            :spacing="0"
+                            :index="0"
+                            :currentTableContentArray="currentTableContentArray"
+                            @changePageToHeader="changePageToHeader"
+            />
+        </div>
+    </div>
 </template>
 
 <script>
-import TreeNodeDisplay from "@/components/commons/TreeNodeDisplay.vue";
+import TreeNodeforReadPage from "../../commons/TreeNodeForReadPage.vue";
 import Loader from "@/components/commons/Loader.vue";
 import NestedDropdown from "@/components/commons/NestedDropdown.vue";
 import VuePdfEmbed from 'vue-pdf-embed'
@@ -150,7 +164,7 @@ import config from '../../../config/index.js';
 export default {
     name: "ViewBook",
     components: {
-        TreeNodeDisplay,
+        TreeNodeforReadPage,
         VuePdfEmbed,
         Loader,
         NestedDropdown,
@@ -176,6 +190,8 @@ export default {
             pageCount:0,
             isLastPage: false,
             currentTableContent: '',
+            currentTableContentArray: [],
+            showSideBar: false,
         }
     },
     created() {
@@ -215,6 +231,12 @@ export default {
         
     },
     methods: {
+        displaySideBar(){
+            this.showSideBar = !this.showSideBar;
+        },
+        clearSideBar(){
+            this.showSideBar = false
+        },
         zoomOut(){
             let col12 = this.$refs.col12;
             if(this.zoomIndex >= 0.5){
@@ -243,7 +265,6 @@ export default {
             }
         },
         changePageToHeader(page){
-            console.log("code herre ", page)
             if(page % 2 == 1){
                 this.isDoneLoading2 = false
                 this.pageLeft = page;
@@ -417,8 +438,10 @@ export default {
                  this.isLastPage = true
             }
             let gap = 1000
+            this.currentTableContentArray = []
             this.tableContentsArr.forEach(tableContentEle => {
                     if(tableContentEle.fromPage <= this.pageRight && this.pageRight <= tableContentEle.toPage){
+                        this.currentTableContentArray.push(tableContentEle)
                         if((tableContentEle.toPage - tableContentEle.fromPage) <= gap){
                             gap = tableContentEle.toPage - tableContentEle.fromPage
                             this.currentTableContent = tableContentEle.headerContent
@@ -432,6 +455,31 @@ export default {
 </script>
 
 <style scoped>
+.side-bar-content{
+    padding-top:15px;
+    padding-bottom:50px;
+}
+.side-bar-x{
+    font-weight: bold;
+    cursor: pointer;
+    float:right;
+    margin-bottom: 5px;
+}
+.side-bar::-webkit-scrollbar {
+  display: none;
+}
+.side-bar{
+    position: fixed;
+    background: gainsboro;
+    height: 100%;
+    width: 315px;
+    top: 36px;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none; 
+    padding: 10px;
+    padding-top: 5px;
+}
 .zoom{
     margin: 0;
     position: absolute;
@@ -651,17 +699,23 @@ html{
     /* opacity: 0.5; */
 }
 .page-setting #menu{
-    width: 350px;
+    width: 300px;
 }
 
 .page-setting #menu .parent{
     background: #F0F0F0;
     color: rgb(75, 74, 74);
     font-weight: 400;
+    overflow-y: hidden;
+    height: 21px;
 }
 .menu-display{
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
+    width: 300px;
+}
+.menu-display:hover{
+    background: gainsboro;
 }
 </style>

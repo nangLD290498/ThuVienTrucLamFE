@@ -3,10 +3,6 @@
     <div class="section-header ">
       <div class="section-title mt-0" v-if="mode == 'create'">Thêm sách</div>
       <div class="section-title mt-0" v-else>Chỉnh sửa sách</div>
-      <!-- <div class="section-header-breadcrumb">
-        <div class="breadcrumb-item"><a href="#">Quản lý sách</a></div>
-        <div class="breadcrumb-item">Thêm sách</div>
-      </div> -->
     </div>
 
     <div class="section-body">
@@ -94,8 +90,12 @@
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
 
-                  <button type="submit" class="btn btn-primary" @click="excute()">
-                    {{ mode === 'create' ? 'Thêm sách' : 'lưu thay đổi' }}
+                  <button type="submit" class="btn btn-primary" @click="excute()" :disabled="loading" >
+                    <span
+                      v-show="loading"
+                      class="spinner-border spinner-border-sm"
+                    ></span> &nbsp;
+                    <span>{{ mode === 'create' ? 'Thêm sách' : 'lưu thay đổi' }}</span>
                   </button>
                 </div>
 
@@ -138,6 +138,7 @@ export default {
       isSaved: '',
       authors: [],
       publishers: [],
+      loading: false,
     };
   },
   components: {
@@ -188,6 +189,7 @@ export default {
       this.$store.dispatch('Category/get');
     },
     async excute() {
+      this.loading = true
       let _this = this;
       let token = localStorage.getItem('user')
       if((this.book.name.trim() === '' ||
@@ -275,6 +277,7 @@ export default {
               }
         },
         (error) => {
+          this.loading = false
           if (error.request.status === 401) {
                   alert("Bạn đã hết phiên đăng nhập, hãy đăng nhập lại để tiếp tục !");
                   console.log('loggin out')
@@ -291,8 +294,10 @@ export default {
           }
         });
         this.$store.dispatch('Book/deleteTC', token) .then((response) => {}, (error) => {})
+        this.loading = false
         }
       catch(err) {
+        this.loading = false
         console.log("Error: ", err)
         _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
       }

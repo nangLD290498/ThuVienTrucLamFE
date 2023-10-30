@@ -6,7 +6,7 @@
               <option v-for="cate in categories" :key="cate.name" :value="cate.name" >{{ cate.name }}</option>
             </select>
             <input v-model="searchText"  class="ng-tns-c84-8 ui-inputtext ui-widget ui-state-default ui-corner-all ui-autocomplete-input ng-star-inserted" type="text" placeholder="Tìm kiếm theo nội dung sách" size="50">
-            <button class="btn-search" @click="reloadSearchResult(category, 1)"><i class="fas fa-search fa-fw"></i></button>
+            <button class="btn-search" :disabled="isLoading" @click="reloadSearchResult(category, 1)"><i class="fas fa-search fa-fw"></i></button>
     </div>
     <div class="search-body" style="margin: 40px 100px;" >
         <div>
@@ -16,8 +16,9 @@
             </div>
             </section>
         </div>
-        <h6>{{ totalElementsV2 }} kết quả</h6><br>
-        <div class="table" v-if="totalElementsV2 > 0">
+        <h6 v-if="!isLoading">{{ totalElementsV2 }} kết quả</h6><br>
+        <Loader  v-if="isLoading" class="loader"/>
+        <div class="table" v-if="totalElementsV2 > 0 && (!isLoading)">
             <table>
                 <tr>
                     <th>#</th>
@@ -36,15 +37,15 @@
                     <td>{{ item.author }}</td>
                     <td>{{ item.header_content }}</td>
                     <td>{{ item.page_no }}</td>
-                    <td>{{ item.content }}</td>
+                    <td v-html="item.content"></td>
                     <td>
                         <!-- <button class="view-details btn btn-primary btn-info mx-2 trigger--fire-modal-confirm" data-toggle="modal" data-target="#fire-modal-confirm" id="fire-modal">xem</button> -->
-                        <button class="view-details btn btn-primary"  @click="viewDetails(item)">xem</button>
+                        <button class="view-details btn btn-primary"  @click="viewDetails(item, index)">xem</button>
                     </td>
                 </tr>
             </table>
         </div>
-        <nav class="text-center" v-if="totalElementsV2 > 0">
+        <nav class="text-center" v-if="totalElementsV2 > 0 && (!isLoading)">
             <paginate
               v-model="page"
               :page-count="pageCount"
@@ -90,11 +91,11 @@
                           <hr class="my-2">
                           <form class="pagedetail-form form-inline ng-untouched ng-pristine ng-valid">
                             <div class="pagedetail-form__flex-group group-1">
-                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
-                                <i class="fas fa-binoculars mr-1"></i> Kết quả sau </button>
+                              <button @click="toNextItem(indexItem)" type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
+                                <i class="fas fa-binoculars mr-1"></i> Kết quả tiếp thep </button>
                                &nbsp;
-                              <button type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
-                                <i class="fas fa-binoculars mr-1"></i> Kết quả trước </button>
+                              <button @click="toPrevItem(indexItem)" type="button" class="btn btn-sm btn-outline-secondary ng-star-inserted">
+                                <i class="fas fa-binoculars mr-1"></i> Kết quả trước đó </button>
                             </div>
                              <span class="zoom">
                                 <i @click="zoomOut" ref="zout" class="fa fa-search-minus" style="font-size:22px;color:rgb(108 117 125);cursor: pointer;"></i>
@@ -198,12 +199,14 @@ import Paginate from 'vuejs-paginate-next';
 import CONSTANT from '../../config/constants';
 import VuePdfEmbed from 'vue-pdf-embed';
 import config from '../../config/index';
+import Loader from "@/components/commons/Loader.vue";
 
 export default {
   components: {
      paginate: Paginate,
      VuePdfEmbed,
      config: config,
+     Loader,
   },
   data() {
     return {
@@ -228,6 +231,8 @@ export default {
       posY: 0,
       selectedStringMenuParents: [],
       tableContentsArr: [],
+      isLoading: false,
+      indexItem: 0,
     }
   },
   computed: {
@@ -237,6 +242,31 @@ export default {
     this.$store.dispatch('Category/get');
   },
   methods: {
+    toNextItem(index){
+      if(index < this.searchItemsV2.length-1){
+        this.isDoneLoading=false
+        let item = this.searchItemsV2[index+1]
+        this.viewDetails(item, index +1)
+    
+      }else{
+        this.$notify({type: 'warning', text: 'Bạn đang ở kết quả cuối, hãy chuyển trang để tiếp tục chuyển tiếp !'});
+      }
+      
+    },
+    toPrevItem(index){
+      if(index > 0){
+        this.isDoneLoading=false
+        let item = this.searchItemsV2[index-1]
+        this.viewDetails(item, index -1)
+      }else{
+        this.$notify({type: 'warning', text: 'Bạn đang ở kết quả đầu tiên, hãy chuyển trang để tiếp tục chuyển tiếp !'});
+      }
+
+    },
+    contentLoad(event,content){
+      console.log("contentLoad: ", content, event)
+      event.target.innerHTML = content
+    },
     getChilds(tableContent, parent, arrParents) {
             if (typeof tableContent.parent === 'undefined') tableContent.parent = parent;
 
@@ -336,7 +366,9 @@ export default {
                 zin.style.color = "rgb(218 226 232)";
             }
         },
-    viewDetails(item){
+    viewDetails(item, index){
+      console.log("sss: ", index, this.searchItemsV2.length)
+      this.indexItem = index
       this.modalShow = true
       this.bookCurrent = item
       this.pdfSource = config.VUE_APP_BASE_URL + `/books/${item.id}/pdf`;
@@ -356,15 +388,18 @@ export default {
       this.reloadSearchResult(this.category, this.page);
       window.scrollTo(0, 0)
     },
-    reloadSearchResult(cate, page) {
+    async reloadSearchResult(cate, page) {
       console.log("searchText: ", this.searchText)
       if(!this.searchText == null && !this.searchText == undefined  || !this.searchText.trim() == ''){
         this.page = page
-        this.$store.dispatch('Search/get', {page: page, searchText: this.searchText, category: cate}).then(response => {
+        this.isLoading = true
+        await this.$store.dispatch('Search/get', {page: page, searchText: this.searchText, category: cate}).then(response => {
+              
               this.searchItemsV2 = response.data.content;
               this.totalElementsV2 = response.data.totalElements;
               this.pageCount = response.data.totalPages;
             });
+          this.isLoading = false
       }
     },
      handleDocumentRender() {
@@ -414,6 +449,14 @@ export default {
 </script>
 
 <style scoped>
+.loader{
+  zoom: 0.3;
+}
+.mark, mark{
+    background-color: yellow !important;
+}
+
+
 .loader-background{
   background: #d1d4c6;
   position: absolute;

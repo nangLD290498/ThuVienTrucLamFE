@@ -1,12 +1,12 @@
 <template>
-		<ul  class="child" v-if="contentTables.length > 0">
+		<ul class="child" v-if="contentTables.length > 0">
 			<li v-for="item in contentTables" :key="item" class="parent">
 				<div class="div" @mouseleave="mouseMoveEvent">
 					<div  @click="$emit('changePageToHeader', item.fromPage)"> {{ item.headerContent }} 
 						<span v-if="(item.childs && item.childs.length > 0)" class="expand">»</span>
 					</div>
 				</div>
-				<NestedDropdown :style="(isUpperHalf ? 'top' : 'bottom') + ': 0;'" @changePageToHeader="(n) => $emit('changePageToHeader', n)" :page="item.fromPage" v-if="(item.childs && item.childs.length > 0)" :contentTables="item.childs" key=""/>
+				<NestedDropdown @mouseenter="mouseOverHandle" :style="(isUpperHalf ? 'top' : 'bottom') + ': 0;  max-height: 300px;'" @changePageToHeader="(n) => $emit('changePageToHeader', n)" :page="item.fromPage" v-if="(item.childs && item.childs.length > 0)" :contentTables="item.childs" key=""/>
 			</li>
 		</ul>
 </template>
@@ -22,12 +22,18 @@ export default {
 	data() {
         return {
             isUpperHalf: true,
+			middlehalf: 0,
+			clientY: 0, 
+			nestedElement: null,
         }
     },
     methods: {
+		mouseOverHandle(event){
+			this.nestedElement = event.target
+		},
 		mouseMoveEvent(event){
-			let middlehalf = window.innerHeight / 2;
-            if (event.clientY >= middlehalf) {
+			this.middlehalf = window.innerHeight / 2;
+            if (event.clientY >= this.middlehalf) {
                 this.isUpperHalf = false
             } else {
                 this.isUpperHalf = true
@@ -53,6 +59,7 @@ export default {
 	background-color: transparent;
 	border-right: #CCC 1px solid;
 }
+
 
 .parent a {
 	margin: 10px;
