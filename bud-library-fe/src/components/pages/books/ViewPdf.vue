@@ -15,6 +15,8 @@
                             @click="selectOnPage('LEFT')"
                             :source="pdfSource"
                             :page="pageLeft"
+                            :textLayer="true"
+                            :annotationLayer="true"
                             @rendered="handleDocumentRender"
                             @password-requested="handlePasswordRequest"
                         />
@@ -26,6 +28,8 @@
                                 style="box-shadow: rgb(136, 136, 136) 5px 5px 5px 5px;"
                                 @click="selectOnPage('RIGHT')"
                                 ref="pdfRef"
+                                :textLayer="true"
+                                :annotationLayer="true"
                                 :source="pdfSource"
                                 :page="pageRight"
                             />

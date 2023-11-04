@@ -112,6 +112,8 @@
                             <div class="content" ref="pdfContent" @click.right="handlerFunction($event)" @click="clearPopup">
                               <vue-pdf-embed
                                   :source="pdfSource"
+                                  :textLayer="true"
+                                  :annotationLayer="true"
                                   :page="bookCurrent.page_no"
                                   @rendered="handleDocumentRender"
                               />
