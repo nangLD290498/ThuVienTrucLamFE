@@ -97,7 +97,6 @@ export default {
       let _this = this;
       this.$store.dispatch('Book/get', {page: this.page}).then(() => {
       }).catch(function (error) {
-        _this.$notify({type: 'error', text: 'Execute failed!'});
       });
     },
     clickCallback() {

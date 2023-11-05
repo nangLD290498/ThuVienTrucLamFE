@@ -83,6 +83,9 @@ export default {
 </script>
 
 <style>
+.author-list::-webkit-scrollbar {
+  display: none;
+}
 .author-list{
     position: absolute;
     background: whitesmoke;
@@ -93,6 +96,9 @@ export default {
     z-index: 1000000;
     right: 0px;
     left:15px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    margin-right: 15px;
 }
 .author-list li{
     padding-left: 20px;

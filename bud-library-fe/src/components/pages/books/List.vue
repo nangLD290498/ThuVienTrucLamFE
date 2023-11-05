@@ -13,13 +13,13 @@
 
       <div class="row">
           <div v-for="book in cate.books" class="col-3" :key="book">
-            <div class="card card-warning" style="max-width: 260px; max-height: 365px; margin: auto;">
+            <div class="card card-warning" style="max-width: 260px; height: 100%; margin: auto;">
               <div class="card-body" style="height: 300px;">
                 <router-link :to="{name: 'books.read', params: { id: book.id }}">
                   <img :src="getThumbnailUrl(book.id)" style='height: 100%; width: 100%; object-fit: contain; background-color: #f4f6f9;'/>
                 </router-link>
               </div>
-              <div class="card-details" style="height: 95px; padding-left: 10px;">
+              <div class="card-details" style=" min-height:100px; padding-left: 10px;">
                 <router-link :to="{name: 'books.read', params: { id: book.id }}">
                   <a href="#"><p class="main-color-light" id="book-name"> {{book.name}} </p></a>
                   <a href="#">
@@ -91,7 +91,7 @@ export default {
     }
     .row .col-3{
       max-width: 100%;
-      margin-bottom: 50px;
+      /* margin-bottom: 50px; */
     }
     .categories{
       margin: 80px 100px;
