@@ -201,6 +201,7 @@ export default {
              !this.isContenTableValid(this.book.tableContent[0])) &&
              this.mode === 'create'
       ){
+        this.loading = false
        _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
         return
       }
@@ -213,6 +214,7 @@ export default {
              !this.isContenTableValid(this.book.tableContent[0])) &&
              this.mode === 'update'
       ){
+         this.loading = false
        _this.$notify({type: 'error', text: 'Bạn cần nhập thông tin đầy đủ và chính xác !'});
         return
       }

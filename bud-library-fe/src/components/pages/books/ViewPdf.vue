@@ -411,11 +411,18 @@ export default {
             }
 
             const message = '"' + this.selectedString +
-                '"\nTrang '+ (this.pagePosition == 'LEFT' ? this.pageLeft : this.pageRight) +
-                " - Mục: " + tableContent.substring(0, tableContent.length - 2) +
+                '"\nTác giả: ' + this.book.author + 
                 " - Sách: "+ this.book.name + 
-                " - Tác giả: " + this.book.author + 
-                " - Xuất bản: " +  this.book.publisher + " (" + this.book.publishedYear + ")";
+                " - Mục: " + tableContent.substring(0, tableContent.length - 2) +
+                " - Xuất bản: " +  this.book.publisher + 
+                " - Năm xuất bản: " + this.book.publishedYear +
+                ' - Trang '+ (this.pagePosition == 'LEFT' ? this.pageLeft : this.pageRight);
+
+                // '"\nTrang '+ (this.pagePosition == 'LEFT' ? this.pageLeft : this.pageRight) +
+                // " - Mục: " + tableContent.substring(0, tableContent.length - 2) +
+                // " - Sách: "+ this.book.name + 
+                // " - Tác giả: " + this.book.author + 
+                // " - Xuất bản: " +  this.book.publisher + " (" + this.book.publishedYear + ")";
             const storage = document.createElement('textarea');
             storage.value = message;
             this.$refs.reference.appendChild(storage);
