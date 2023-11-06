@@ -19,7 +19,7 @@
                   <img :src="getThumbnailUrl(book.id)" style='height: 100%; width: 100%; object-fit: contain; background-color: #f4f6f9;'/>
                 </router-link>
               </div>
-              <div class="card-details" style=" min-height:100px; padding-left: 10px;">
+              <div class="card-details" style=" height:120px; overflow: hidden; padding-left: 10px;">
                 <router-link :to="{name: 'books.read', params: { id: book.id }}">
                   <a href="#"><p class="main-color-light" id="book-name"> {{book.name}} </p></a>
                   <a href="#">
