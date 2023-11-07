@@ -451,11 +451,21 @@ export default {
             let gap = 1000
             this.currentTableContentArray = []
             this.tableContentsArr.forEach(tableContentEle => {
-                    if(tableContentEle.fromPage <= this.pageRight && this.pageRight <= tableContentEle.toPage){
-                        this.currentTableContentArray.push(tableContentEle)
-                        if((tableContentEle.toPage - tableContentEle.fromPage) <= gap){
-                            gap = tableContentEle.toPage - tableContentEle.fromPage
-                            this.currentTableContent = tableContentEle.headerContent
+                    if(tableContentEle.fromPage === tableContentEle.toPage && tableContentEle.fromPage % 2 === 1){
+                        if(tableContentEle.fromPage === this.pageLeft){
+                            this.currentTableContentArray.push(tableContentEle)
+                            if((tableContentEle.toPage - tableContentEle.fromPage) <= gap){
+                                gap = tableContentEle.toPage - tableContentEle.fromPage
+                                this.currentTableContent = tableContentEle.headerContent
+                            }
+                        }
+                    } else{
+                        if(tableContentEle.fromPage <= this.pageRight && this.pageRight <= tableContentEle.toPage){
+                            this.currentTableContentArray.push(tableContentEle)
+                            if((tableContentEle.toPage - tableContentEle.fromPage) <= gap){
+                                gap = tableContentEle.toPage - tableContentEle.fromPage
+                                this.currentTableContent = tableContentEle.headerContent
+                            }
                         }
                     }
                 })
