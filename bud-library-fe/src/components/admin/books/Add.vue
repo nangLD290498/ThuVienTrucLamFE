@@ -80,13 +80,53 @@
                         <div class="btn btn-outline-success ml-2" @click="addChild()">+</div>
                       </div>
                     </div>
-
+                    <div :key="book.tableContent">
                     <TreeNode
                         v-for="child in book.tableContent"
-                        :key="child.id"
+                        @deleteNode="(n) => {
+                          if(book.tableContent.includes(n)){
+                            const i = book.tableContent.indexOf(child);
+                            if (i > -1) {
+                              book.tableContent.splice(i, 1);
+                            }
+                            return
+                          }
+                          const index = child.childs.indexOf(n);
+                          if (index > -1) {
+                            child.childs.splice(index, 1);
+                          }
+                        }"
+                        @insertPrevNode="(n) => {
+                           let item = {
+                              headerContent:'',
+                              childs:[]
+                            };
+                          if(book.tableContent.includes(n)){
+                            const i = book.tableContent.indexOf(child);
+                            book.tableContent.splice(i, 0, item);
+                            return
+                          }
+                          const index = child.childs.indexOf(n);
+                          child.childs.splice(index, 0, item);
+                        }"
+                        @insertNextNode="(n) => {
+                          let item = {
+                              headerContent:'',
+                              childs:[]
+                            };
+                          if(book.tableContent.includes(n)){
+                            const i = book.tableContent.indexOf(child)+1;
+                            book.tableContent.splice(i, 0, item);
+                            return
+                          }
+                          const index = child.childs.indexOf(n) + 1;
+                          child.childs.splice(index, 0, item);
+                        }"
+                        :key="child"
                         :node="child"
                         :spacing="0"
                     />
+                    </div>
                     <div v-if="error.books" class="form-text text-danger"> {{ error.books[0] }} </div>
                   </div>
 
@@ -176,6 +216,11 @@ export default {
     ...mapState('Category', ['categories']),
   },
   methods: {
+    // deleteNode(nnn){
+    //   console.log("xxx: ", nnn)
+    //   nnn = null
+    //   console.log("xxx3: ", nnn)
+    // },
     getPublisherContent(text){
       this.book.publisher = text
     },
